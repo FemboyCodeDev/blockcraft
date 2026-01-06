@@ -44,6 +44,7 @@ public class RubyDung implements Runnable {
       this.fogColor.flip();
       Display.setDisplayMode(new DisplayMode(1024, 768));
       Display.create();
+      Display.setTitle("BlockCraft");
       Keyboard.create();
       Mouse.create();
       this.width = Display.getDisplayMode().getWidth();
@@ -205,13 +206,13 @@ public class RubyDung implements Runnable {
          if (hotbar_slot < 0){
             hotbar_slot = 9;
          }
-         System.out.println(hotbar_slot);
-         System.out.println("Current index"+this.hotbar[hotbar_slot]);
-         if (Mouse.getEventButton() == 1 && Mouse.getEventButtonState() && this.hitResult != null) {
+         //System.out.println(hotbar_slot);
+         //System.out.println("Current index"+this.hotbar[hotbar_slot]);
+         if (Mouse.getEventButton() == 0 && Mouse.getEventButtonState() && this.hitResult != null) {
             this.level.setTile(this.hitResult.x, this.hitResult.y, this.hitResult.z, 0);
          }
 
-         if (Mouse.getEventButton() == 0 && Mouse.getEventButtonState() && this.hitResult != null) {
+         if (Mouse.getEventButton() == 1 && Mouse.getEventButtonState() && this.hitResult != null) {
             int x = this.hitResult.x;
             int y = this.hitResult.y;
             int z = this.hitResult.z;
