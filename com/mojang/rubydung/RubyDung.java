@@ -27,7 +27,9 @@ public class RubyDung implements Runnable {
    private FloatBuffer fogColor = BufferUtils.createFloatBuffer(4);
    private Timer timer = new Timer(60.0F);
    private Level level;
+   private Level menu_level;
    private LevelRenderer levelRenderer;
+   private LevelRenderer menu_levelRenderer;
    private Player player;
    private IntBuffer viewportBuffer = BufferUtils.createIntBuffer(16);
    private IntBuffer selectBuffer = BufferUtils.createIntBuffer(2000);
@@ -67,9 +69,14 @@ public class RubyDung implements Runnable {
       GL11.glMatrixMode(5888);
 
       this.game_mode = 0;
-      this.game_mode = 100;
+      //this.game_mode = 100;
 
       this.level = new Level(64, 64, 64);
+      this.level.load("level.dat");
+      this.menu_level = new Level(64, 64, 64);
+      this.menu_level.load("titlescreen.dat");
+
+      this.menu_levelRenderer = new LevelRenderer(this.menu_level);
       this.levelRenderer = new LevelRenderer(this.level);
       this.player = new Player(this.level);
       Mouse.setGrabbed(true);
@@ -105,7 +112,7 @@ public class RubyDung implements Runnable {
             if (game_mode == 100) {
                this.render(this.timer.a);
             } else if (game_mode == 0){
-               this.render_mainMenu();
+               this.render_mainMenu(this.timer.a);
 
             }else{
                Display.update();
@@ -129,6 +136,8 @@ public class RubyDung implements Runnable {
 
    public void tick() {
       if (this.game_mode == 100) {
+         this.player.tick();
+      }else {
          this.player.tick();
       }
    }
@@ -312,7 +321,45 @@ public class RubyDung implements Runnable {
       Display.update();
    }
 
-   public void render_mainMenu(){
+   public void render_mainMenu(float a){
+      float xo = (float)Mouse.getDX();
+      float yo = (float)Mouse.getDY();
+      this.player.turn(xo, yo);
+      this.pick(a);
+
+
+      while(Keyboard.next()) {
+         if (Keyboard.getEventKey() == 28 && Keyboard.getEventKeyState()) {
+            this.level.save();
+         }
+      }
+
+      GL11.glClear(16640);
+      this.setupCamera(a);
+
+
+      GL11.glEnable(2884);
+      GL11.glEnable(2912);
+      GL11.glFogi(2917, 2048);
+      GL11.glFogf(2914, 0.2F);
+      GL11.glFog(2918, this.fogColor);
+      GL11.glDisable(2912);
+
+
+      this.levelRenderer.render(this.player, 0);
+
+
+
+      GL11.glEnable(2912);
+      this.levelRenderer.render(this.player, 1);
+      GL11.glDisable(3553);
+      if (this.hitResult != null) {
+
+         this.levelRenderer.renderHit(this.hitResult);
+      }
+
+      GL11.glDisable(2912);
+
       GL11.glMatrixMode(5889);
       GL11.glLoadIdentity();
       float aspectRatio = (float) width / (float) height;

@@ -35,12 +35,11 @@ public class Level {
       }
 
       this.calcLightDepths(0, 0, w, h);
-      this.load();
    }
 
-   public void load() {
+   public void load(String pathname) {
       try {
-         DataInputStream dis = new DataInputStream(new GZIPInputStream(new FileInputStream(new File("level.dat"))));
+         DataInputStream dis = new DataInputStream(new GZIPInputStream(new FileInputStream(new File(pathname))));
          dis.readFully(this.blocks);
          this.calcLightDepths(0, 0, this.width, this.height);
 
