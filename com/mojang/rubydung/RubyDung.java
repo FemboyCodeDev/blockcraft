@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import javax.swing.JOptionPane;
+
+import com.mojang.rubydung.level.Tesselator;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
@@ -31,9 +33,13 @@ public class RubyDung implements Runnable {
    private IntBuffer selectBuffer = BufferUtils.createIntBuffer(2000);
    private HitResult hitResult = null;
 
+   //private Tesselator t = new Tesselator();
+   //private static int texture = Textures.loadTexture("/terrain.png", 9728);
 
    private int hotbar_slot = 0;
    private int[] hotbar = {1,2,3,0,0,0,0,0,0,0};
+
+   private int game_mode = 0; // 0: Main menu | 100: In game | 101: Paused game
 
    public void init() throws LWJGLException, IOException {
       int col = 920330;
@@ -47,6 +53,7 @@ public class RubyDung implements Runnable {
       Display.setTitle("BlockCraft");
       Keyboard.create();
       Mouse.create();
+
       this.width = Display.getDisplayMode().getWidth();
       this.height = Display.getDisplayMode().getHeight();
       GL11.glEnable(3553);
@@ -58,10 +65,16 @@ public class RubyDung implements Runnable {
       GL11.glMatrixMode(5889);
       GL11.glLoadIdentity();
       GL11.glMatrixMode(5888);
-      this.level = new Level(256, 256, 64);
+
+      this.game_mode = 0;
+      this.game_mode = 100;
+
+      this.level = new Level(64, 64, 64);
       this.levelRenderer = new LevelRenderer(this.level);
       this.player = new Player(this.level);
       Mouse.setGrabbed(true);
+
+
    }
 
    public void destroy() {
@@ -89,8 +102,14 @@ public class RubyDung implements Runnable {
             for(int i = 0; i < this.timer.ticks; ++i) {
                this.tick();
             }
+            if (game_mode == 100) {
+               this.render(this.timer.a);
+            } else if (game_mode == 0){
+               this.render_mainMenu();
 
-            this.render(this.timer.a);
+            }else{
+               Display.update();
+            }
             ++frames;
 
             while(System.currentTimeMillis() >= lastTime + 1000L) {
@@ -109,7 +128,9 @@ public class RubyDung implements Runnable {
    }
 
    public void tick() {
-      this.player.tick();
+      if (this.game_mode == 100) {
+         this.player.tick();
+      }
    }
 
    private void moveCameraToPlayer(float a) {
@@ -276,6 +297,22 @@ public class RubyDung implements Runnable {
 
       GL11.glDisable(2912);
 
+      GL11.glMatrixMode(5889);
+      GL11.glLoadIdentity();
+      float aspectRatio = (float) width / (float) height;
+      GLU.gluOrtho2D(0,10*aspectRatio,0,10);
+      GL11.glMatrixMode(5888);
+      GL11.glLoadIdentity();
+      GL11.glEnable(GL11.GL_TEXTURE_2D);
+      GL11.glDisable(GL11.GL_DEPTH_TEST);
+      this.levelRenderer.renderTex(this.hotbar[this.hotbar_slot]-1);
+      GL11.glEnable(GL11.GL_DEPTH_TEST);
+      GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+      Display.update();
+   }
+
+   public void render_mainMenu(){
       GL11.glMatrixMode(5889);
       GL11.glLoadIdentity();
       float aspectRatio = (float) width / (float) height;
