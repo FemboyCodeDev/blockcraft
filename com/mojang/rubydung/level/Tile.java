@@ -4,12 +4,43 @@ public class Tile {
    public static Tile air = new Tile(-1);
    public static Tile grass = new Tile(0);
    public static Tile rock = new Tile(1);
+   public static Tile plank = new Tile(2);
+
 
 
    private int tex = 0;
 
    private Tile(int tex) {
       this.tex = tex;
+   }
+
+
+   public void render_flat(Tesselator t, Level level, int layer, int x, int y, int z) {
+      float u0 = (float) this.tex / 16.0F;
+      float u1 = u0 + 0.0624375F;
+      float v0 = 0.0F;
+      float v1 = v0 + 0.0624375F;
+      float c1 = 1.0F;
+      float c2 = 0.8F;
+      float c3 = 0.6F;
+      float x0 = (float) x + 0.0F;
+      float x1 = (float) x + 1.0F;
+      float y0 = (float) y + 0.0F;
+      float y1 = (float) y + 1.0F;
+      float z0 = (float) z + 0.0F;
+      float z1 = (float) z + 1.0F;
+      float br;
+      br = level.getBrightness(x, y - 1, z) * c1;
+      t.color(br, br, br);
+      t.tex(u0, v1);
+      t.vertex(0, 0, 1);
+      t.tex(u0, v0);
+      t.vertex(10, 0, 1);
+      t.tex(u1, v0);
+      t.vertex(10, 10, 1);
+      t.tex(u1, v1);
+      t.vertex(0, 10, z1);
+
    }
 
    public void render(Tesselator t, Level level, int layer, int x, int y, int z) {

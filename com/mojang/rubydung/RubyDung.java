@@ -33,7 +33,7 @@ public class RubyDung implements Runnable {
 
 
    private int hotbar_slot = 0;
-   private int[] hotbar = {1,2,0,0,0,0,0,0,0,0};
+   private int[] hotbar = {1,2,3,0,0,0,0,0,0,0};
 
    public void init() throws LWJGLException, IOException {
       int col = 920330;
@@ -119,6 +119,7 @@ public class RubyDung implements Runnable {
       float y = this.player.yo + (this.player.y - this.player.yo) * a;
       float z = this.player.zo + (this.player.z - this.player.zo) * a;
       GL11.glTranslatef(-x, -y, -z);
+
    }
 
    private void setupCamera(float a) {
@@ -250,21 +251,42 @@ public class RubyDung implements Runnable {
 
       GL11.glClear(16640);
       this.setupCamera(a);
+
+
       GL11.glEnable(2884);
       GL11.glEnable(2912);
       GL11.glFogi(2917, 2048);
       GL11.glFogf(2914, 0.2F);
       GL11.glFog(2918, this.fogColor);
       GL11.glDisable(2912);
+
+
       this.levelRenderer.render(this.player, 0);
+
+
+
       GL11.glEnable(2912);
       this.levelRenderer.render(this.player, 1);
       GL11.glDisable(3553);
       if (this.hitResult != null) {
+
          this.levelRenderer.renderHit(this.hitResult);
       }
 
       GL11.glDisable(2912);
+
+      GL11.glMatrixMode(5889);
+      GL11.glLoadIdentity();
+      float aspectRatio = (float) width / (float) height;
+      GLU.gluOrtho2D(0,10*aspectRatio,0,10);
+      GL11.glMatrixMode(5888);
+      GL11.glLoadIdentity();
+      GL11.glEnable(GL11.GL_TEXTURE_2D);
+      GL11.glDisable(GL11.GL_DEPTH_TEST);
+      this.levelRenderer.renderTex(this.hotbar[this.hotbar_slot]-1);
+      GL11.glEnable(GL11.GL_DEPTH_TEST);
+      GL11.glDisable(GL11.GL_TEXTURE_2D);
+
       Display.update();
    }
 

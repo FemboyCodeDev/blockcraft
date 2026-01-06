@@ -2,6 +2,7 @@ package com.mojang.rubydung.level;
 
 import com.mojang.rubydung.HitResult;
 import com.mojang.rubydung.Player;
+import com.mojang.rubydung.Textures;
 import com.mojang.rubydung.phys.AABB;
 import org.lwjgl.opengl.GL11;
 
@@ -13,6 +14,7 @@ public class LevelRenderer implements LevelListener {
    private int yChunks;
    private int zChunks;
    Tesselator t = new Tesselator();
+   private static int texture = Textures.loadTexture("/terrain.png", 9728);
 
    public LevelRenderer(Level level) {
       this.level = level;
@@ -48,6 +50,30 @@ public class LevelRenderer implements LevelListener {
          }
       }
 
+   }
+
+   public void renderTex(int tex){
+      float u0 = (float) tex/ 16.0F;
+      float u1 = u0 + 0.0624375F;
+      float v0 = 0.0F;
+      float v1 = v0 + 0.0624375F;
+      float c1 = 1.0F;
+      float c2 = 0.8F;
+      float c3 = 0.6F;
+      float br;
+
+      GL11.glBindTexture(3553, texture);
+      GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+      t.init();
+      t.tex(u0, v1);
+      t.vertex(0, 0, 0);
+      t.tex(u0, v0);
+      t.vertex(1, 0, 0);
+      t.tex(u1, v0);
+      t.vertex(1, 1, 0);
+      t.tex(u1, v1);
+      t.vertex(0, 1, 0);
+      t.flush();
    }
 
    public void render(Player player, int layer) {
