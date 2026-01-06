@@ -352,11 +352,25 @@ public class RubyDung implements Runnable {
       this.player.z = 33;
       player.y = 39.4f;
       player.x = 30;
-       System.out.println(this.player.xRot + ","  + this.player.yRot);
+       //System.out.println(this.player.xRot + ","  + this.player.yRot);
        this.player.xRot = 15;
        this.player.yRot = 90;
 
+
+
       this.pick(a);
+
+       float mouseX = (float)Mouse.getX();
+       float mouseY = (float)Mouse.getY();
+
+       while(Mouse.next()) {
+           System.out.println(mouseX + "," + mouseY);
+           //System.out.println(hotbar_slot);
+           //System.out.println("Current index"+this.hotbar[hotbar_slot]);
+           if (Mouse.getEventButton() == 0) {
+               System.out.println(mouseX + "," + mouseY);
+           }
+       }
 
 
       GL11.glClear(16640);
