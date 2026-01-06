@@ -42,6 +42,7 @@ public class RubyDung implements Runnable {
    private int[] hotbar = {1,2,3,0,0,0,0,0,0,0};
 
    private int game_mode = 0; // 0: Main menu | 100: In game | 101: Paused game
+    private boolean dev_command_pause = true;
 
    public void init() throws LWJGLException, IOException {
       int col = 920330;
@@ -72,6 +73,7 @@ public class RubyDung implements Runnable {
       //this.game_mode = 100;
 
       this.level = new Level(64, 64, 64);
+      //this.level.load("level.dat");
       this.level.load("level.dat");
       this.menu_level = new Level(64, 64, 64);
       this.menu_level.load("titlescreen.dat");
@@ -79,6 +81,7 @@ public class RubyDung implements Runnable {
       this.menu_levelRenderer = new LevelRenderer(this.menu_level);
       this.levelRenderer = new LevelRenderer(this.level);
       this.player = new Player(this.level);
+
       Mouse.setGrabbed(true);
 
 
@@ -111,8 +114,11 @@ public class RubyDung implements Runnable {
             }
             if (game_mode == 100) {
                this.render(this.timer.a);
+               this.devkeybinds();
+               Mouse.setGrabbed(true);
             } else if (game_mode == 0){
                this.render_mainMenu(this.timer.a);
+                Mouse.setGrabbed(false);
 
             }else{
                Display.update();
@@ -140,6 +146,24 @@ public class RubyDung implements Runnable {
       }else {
          this.player.tick();
       }
+   }
+
+   public void devkeybinds() {
+
+
+       if (Keyboard.isKeyDown(38)) {} // 38 = key L
+       if (Keyboard.isKeyDown(207)) {
+
+           if (!this.dev_command_pause) {
+               System.out.println("Remove layer");
+           }
+           this.dev_command_pause = true;
+           for(int x = 0; x < 64; ++x) {for(int y = 0; y < 64; ++y) {level.setTile((int)x, (int) player.y-2, (int)y,0);}}
+
+       } // Key_END
+       else {
+           this.dev_command_pause = false;
+       }
    }
 
    private void moveCameraToPlayer(float a) {
@@ -322,17 +346,18 @@ public class RubyDung implements Runnable {
    }
 
    public void render_mainMenu(float a){
-      float xo = (float)Mouse.getDX();
-      float yo = (float)Mouse.getDY();
-      this.player.turn(xo, yo);
+
+
+      //System.out.println(this.player.x + ","  + this.player.y + ", " + this.player.z);
+      this.player.z = 33;
+      player.y = 39.4f;
+      player.x = 30;
+       System.out.println(this.player.xRot + ","  + this.player.yRot);
+       this.player.xRot = 15;
+       this.player.yRot = 90;
+
       this.pick(a);
 
-
-      while(Keyboard.next()) {
-         if (Keyboard.getEventKey() == 28 && Keyboard.getEventKeyState()) {
-            this.level.save();
-         }
-      }
 
       GL11.glClear(16640);
       this.setupCamera(a);
@@ -346,16 +371,16 @@ public class RubyDung implements Runnable {
       GL11.glDisable(2912);
 
 
-      this.levelRenderer.render(this.player, 0);
+      this.menu_levelRenderer.render(this.player, 0);
 
 
 
       GL11.glEnable(2912);
-      this.levelRenderer.render(this.player, 1);
+      this.menu_levelRenderer.render(this.player, 1);
       GL11.glDisable(3553);
       if (this.hitResult != null) {
 
-         this.levelRenderer.renderHit(this.hitResult);
+         this.menu_levelRenderer.renderHit(this.hitResult);
       }
 
       GL11.glDisable(2912);
@@ -368,7 +393,7 @@ public class RubyDung implements Runnable {
       GL11.glLoadIdentity();
       GL11.glEnable(GL11.GL_TEXTURE_2D);
       GL11.glDisable(GL11.GL_DEPTH_TEST);
-      this.levelRenderer.renderTex(this.hotbar[this.hotbar_slot]-1);
+      this.menu_levelRenderer.renderTex(this.hotbar[this.hotbar_slot]-1);
       GL11.glEnable(GL11.GL_DEPTH_TEST);
       GL11.glDisable(GL11.GL_TEXTURE_2D);
 
