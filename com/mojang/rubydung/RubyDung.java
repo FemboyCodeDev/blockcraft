@@ -10,6 +10,7 @@ import java.nio.IntBuffer;
 import javax.swing.JOptionPane;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
+import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -29,6 +30,10 @@ public class RubyDung implements Runnable {
    private IntBuffer viewportBuffer = BufferUtils.createIntBuffer(16);
    private IntBuffer selectBuffer = BufferUtils.createIntBuffer(2000);
    private HitResult hitResult = null;
+
+
+   private int hotbar_slot = 0;
+   private int[] hotbar = {1,2,0,0,0,0,0,0,0,0};
 
    public void init() throws LWJGLException, IOException {
       int col = 920330;
@@ -186,6 +191,21 @@ public class RubyDung implements Runnable {
       this.pick(a);
 
       while(Mouse.next()) {
+
+         int wheel = Mouse.getDWheel();
+         if (wheel > 0){
+            hotbar_slot += 1;
+         }else if (wheel < 0){
+            hotbar_slot -= 1;
+         }
+         if (hotbar_slot > 9){
+            hotbar_slot = 0;
+         }
+         if (hotbar_slot < 0){
+            hotbar_slot = 9;
+         }
+         System.out.println(hotbar_slot);
+         System.out.println("Current index"+this.hotbar[hotbar_slot]);
          if (Mouse.getEventButton() == 1 && Mouse.getEventButtonState() && this.hitResult != null) {
             this.level.setTile(this.hitResult.x, this.hitResult.y, this.hitResult.z, 0);
          }
@@ -218,7 +238,7 @@ public class RubyDung implements Runnable {
                ++x;
             }
 
-            this.level.setTile(x, y, z, 1);
+            this.level.setTile(x, y, z, this.hotbar[hotbar_slot]);
          }
       }
 

@@ -20,6 +20,8 @@ public class Chunk {
    public static int rebuiltThisFrame = 0;
    public static int updates = 0;
 
+   public final Tile[] blocks = {Tile.air,Tile.grass,Tile.rock};
+
    public Chunk(Level level, int x0, int y0, int z0, int x1, int y1, int z1) {
       this.level = level;
       this.x0 = x0;
@@ -47,7 +49,9 @@ public class Chunk {
             for(int y = this.y0; y < this.y1; ++y) {
                for(int z = this.z0; z < this.z1; ++z) {
                   if (this.level.isTile(x, y, z)) {
+                     blocks[this.level.getTile(x,y,z)].render(t, this.level, layer, x, y, z);
                      //int tex = y != this.level.depth * 2 / 3;
+                     /*
                      int tex = 0;
                      ++tiles;
                      if (tex == 0) {
@@ -55,6 +59,7 @@ public class Chunk {
                      } else {
                         Tile.grass.render(t, this.level, layer, x, y, z);
                      }
+                     */
                   }
                }
             }

@@ -1,8 +1,10 @@
 package com.mojang.rubydung.level;
 
 public class Tile {
+   public static Tile air = new Tile(-1);
    public static Tile grass = new Tile(0);
    public static Tile rock = new Tile(1);
+
 
    private int tex = 0;
 

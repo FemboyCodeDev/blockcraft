@@ -99,9 +99,17 @@ public class Level {
 
    public boolean isTile(int x, int y, int z) {
       if (x >= 0 && y >= 0 && z >= 0 && x < this.width && y < this.depth && z < this.height) {
-         return this.blocks[(y * this.height + z) * this.width + x] == 1;
+         return this.blocks[(y * this.height + z) * this.width + x] != 0;
       } else {
          return false;
+      }
+   }
+
+   public int getTile(int x, int y, int z) {
+      if (x >= 0 && y >= 0 && z >= 0 && x < this.width && y < this.depth && z < this.height) {
+         return this.blocks[(y * this.height + z) * this.width + x];
+      } else {
+         return -1;
       }
    }
 
