@@ -354,14 +354,14 @@ public class RubyDung implements Runnable {
 
       //System.out.println(this.player.x + ","  + this.player.y + ", " + this.player.z);
       this.player.z = 33;
-      player.y = 39.4f;
-      player.x = 30;
+      this.player.y = 39.4f;
+      this.player.x = 30;
        //System.out.println(this.player.xRot + ","  + this.player.yRot);
        this.player.xRot = 15;
        this.player.yRot = 90;
-       this.player.xo = 1;
-       this.player.yo = 1;
-       this.player.zo = 1;
+       this.player.xo = this.player.x;
+       this.player.yo = this.player.y;
+       this.player.zo = this.player.z;
 
 
 
