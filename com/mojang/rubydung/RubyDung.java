@@ -158,12 +158,13 @@ public class RubyDung implements Runnable {
 
             } else if (game_mode == 0){
                this.render_mainMenu(this.timer.a);
-                Mouse.setGrabbed(false);
+                if(Mouse.isGrabbed()){Mouse.setGrabbed(false);}
 
             } else if(game_mode == 1){
                render_save_select(this.timer.a);
-               Mouse.setGrabbed(false);
+                if(Mouse.isGrabbed()){Mouse.setGrabbed(false);}
             } else if (game_mode == 101){
+                if(Mouse.isGrabbed()){Mouse.setGrabbed(false);}
                 System.out.println("game is paused!");
                 //render_background(this.timer.a);
                 render_paused(this.timer.a);
