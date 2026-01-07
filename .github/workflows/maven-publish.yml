@@ -54,14 +54,22 @@ jobs:
       with:
         name: cavegame-executable
         path: target/
-
-    # --- NEW STEP: ZIP ASSETS ---
+        
     - name: Prepare Release Assets
       run: |
         mkdir -p release_bundle
+        
+        # Copy the build artifacts
         cp target/*.jar release_bundle/
         cp -r target/natives/ release_bundle/
+        
+        # Copy the textures from root
         cp Font-16x16.png terrain.png UI-texture.png release_bundle/
+        
+        # Create the run.bat file
+        echo "java -Djava.library.path=./natives -jar cavegame-1.0-SNAPSHOT.jar" > release_bundle/run.bat
+        
+        # Zip everything up
         zip -r cavegame-release.zip release_bundle/
 
     - name: Publish to GitHub Packages
