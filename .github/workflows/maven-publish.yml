@@ -22,12 +22,14 @@ jobs:
 
     - name: Build with Maven
       run: mvn -B package --file pom.xml
-
+      
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: maven-build-output
-        path: target/*.jar
+        name: cavegame-executable
+        path: |
+          target/*.jar
+          target/natives/
 
   # --- SECTION 2: PUBLISHING ---
   publish:
