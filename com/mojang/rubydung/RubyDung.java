@@ -104,11 +104,15 @@ public class RubyDung implements Runnable {
 
       long lastTime = System.currentTimeMillis();
       int frames = 0;
+      this.timer.advanceTime();
 
       try {
          while(!Keyboard.isKeyDown(1) && !Display.isCloseRequested()) {
-            this.timer.advanceTime();
-
+            if (game_mode == 100) {
+               this.timer.advanceTime();
+            }else {
+               this.timer.advanceTime();
+            }
             for(int i = 0; i < this.timer.ticks; ++i) {
                this.tick();
             }
@@ -143,7 +147,7 @@ public class RubyDung implements Runnable {
    public void tick() {
       if (this.game_mode == 100) {
          this.player.tick();
-      }else {
+      }else if (this.game_mode == 0) {
          this.player.tick();
       }
    }
@@ -355,10 +359,13 @@ public class RubyDung implements Runnable {
        //System.out.println(this.player.xRot + ","  + this.player.yRot);
        this.player.xRot = 15;
        this.player.yRot = 90;
+       this.player.xo = 1;
+       this.player.yo = 1;
+       this.player.zo = 1;
 
 
 
-      this.pick(a);
+     this.pick(a);
 
        float mouseX = (float)Mouse.getX();
        float mouseY = (float)Mouse.getY();
