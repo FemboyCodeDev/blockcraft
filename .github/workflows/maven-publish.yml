@@ -3,10 +3,9 @@ name: Maven Package
 on:
   release:
     types: [created]
-  workflow_dispatch: # Allows you to run this manually from the "Actions" tab
+  workflow_dispatch:
 
 jobs:
-  # --- SECTION 1: BUILDING ---
   build:
     runs-on: ubuntu-latest
     steps:
@@ -31,14 +30,12 @@ jobs:
           target/*.jar
           target/natives/
 
-  # --- SECTION 2: PUBLISHING ---
   publish:
-    # Only run this job if the event is a release!
     if: github.event_name == 'release'
     needs: build
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write # Changed to write so we can upload to the release
       packages: write
 
     steps:
@@ -58,7 +55,24 @@ jobs:
         name: cavegame-executable
         path: target/
 
+    # --- NEW STEP: ZIP ASSETS ---
+    - name: Prepare Release Assets
+      run: |
+        mkdir -p release_bundle
+        cp target/*.jar release_bundle/
+        cp -r target/natives/ release_bundle/
+        cp Font-16x16.png terrain.png UI-texture.png release_bundle/
+        zip -r cavegame-release.zip release_bundle/
+
     - name: Publish to GitHub Packages
       run: mvn deploy -s ${{ github.workspace }}/settings.xml
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
+    # --- NEW STEP: UPLOAD TO RELEASE ---
+    - name: Upload Release Asset
+      uses: softprops/action-gh-release@v2
+      with:
+        files: cavegame-release.zip
       env:
         GITHUB_TOKEN: ${{ github.token }}
