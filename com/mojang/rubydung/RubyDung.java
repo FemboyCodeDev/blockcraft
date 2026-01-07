@@ -3,6 +3,7 @@ package com.mojang.rubydung;
 import com.mojang.rubydung.level.Chunk;
 import com.mojang.rubydung.level.Level;
 import com.mojang.rubydung.level.LevelRenderer;
+import com.mojang.rubydung.UIRenderer;
 import java.awt.Component;
 import java.io.IOException;
 import java.nio.FloatBuffer;
