@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
+  # --- JOB 1: BUILDING (Always runs) ---
   build:
     runs-on: ubuntu-latest
     steps:
@@ -22,7 +23,7 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
       
-    - name: Upload Artifact
+    - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
         name: cavegame-executable
@@ -30,17 +31,58 @@ jobs:
           target/*.jar
           target/natives/
 
-  publish:
-    if: github.event_name == 'release'
+  # --- JOB 2: ASSET CREATION (Always runs) ---
+  release-assets:
     needs: build
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Changed to write so we can upload to the release
-      packages: write
+      contents: write
 
     steps:
     - uses: actions/checkout@v4
 
+    - name: Download Build Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: cavegame-executable
+        path: target/
+
+    - name: Prepare Release Zip
+      run: |
+        mkdir -p release_bundle
+        cp target/*.jar release_bundle/
+        cp -r target/natives/ release_bundle/
+        cp Font-16x16.png terrain.png UI-texture.png release_bundle/
+        echo "java -Djava.library.path=./natives -jar cavegame-1.0-SNAPSHOT.jar" > release_bundle/run.bat
+        zip -r cavegame-release.zip release_bundle/
+
+    # Only uploads to the Release Page if this is a release event
+    - name: Upload to Release Page
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v2
+      with:
+        files: cavegame-release.zip
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
+    # Always uploads the ZIP to Actions tab so you can download it manually
+    - name: Store Final Zip Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: final-release-zip
+        path: cavegame-release.zip
+
+  # --- JOB 3: PUBLISHING (Only runs on Release) ---
+  publish:
+    if: github.event_name == 'release'
+    needs: [build, release-assets]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v4
     - name: Set up JDK 8
       uses: actions/setup-java@v4
       with:
@@ -49,38 +91,7 @@ jobs:
         server-id: github
         settings-path: ${{ github.workspace }}
 
-    - name: Download Artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: cavegame-executable
-        path: target/
-        
-    - name: Prepare Release Assets
-      run: |
-        mkdir -p release_bundle
-        
-        # Copy the build artifacts
-        cp target/*.jar release_bundle/
-        cp -r target/natives/ release_bundle/
-        
-        # Copy the textures from root
-        cp Font-16x16.png terrain.png UI-texture.png release_bundle/
-        
-        # Create the run.bat file
-        echo "java -Djava.library.path=./natives -jar cavegame-1.0-SNAPSHOT.jar" > release_bundle/run.bat
-        
-        # Zip everything up
-        zip -r cavegame-release.zip release_bundle/
-
     - name: Publish to GitHub Packages
       run: mvn deploy -s ${{ github.workspace }}/settings.xml
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-
-    # --- NEW STEP: UPLOAD TO RELEASE ---
-    - name: Upload Release Asset
-      uses: softprops/action-gh-release@v2
-      with:
-        files: cavegame-release.zip
       env:
         GITHUB_TOKEN: ${{ github.token }}
