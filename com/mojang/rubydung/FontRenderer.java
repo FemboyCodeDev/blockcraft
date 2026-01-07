@@ -7,7 +7,7 @@ public class FontRenderer {
     Tesselator t = new Tesselator();
     private static int texture = Textures.loadTexture("/Font-16x16.png", 9728);
 
-    private String charMap = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private String charMap = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz 0123456789.";
 
 
     public void renderTex(int tex,int height, int width, float x,float y){
@@ -51,6 +51,7 @@ public class FontRenderer {
     }
     public void renderText(float x, float y, String text, int width, int height){
         for (int i=0; i< text.length();i++){
+            //System.out.println(text.charAt(i)+ "," + charMap.indexOf(text.charAt(i)));
             int tex = charMap.indexOf(text.charAt(i));
             this.renderTex(tex,height,width,x+i,y);
         }

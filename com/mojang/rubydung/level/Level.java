@@ -17,6 +17,7 @@ public class Level {
    private byte[] blocks;
    private int[] lightDepths;
    private ArrayList<LevelListener> levelListeners = new ArrayList();
+   private String pathname;
 
    public Level(int w, int h, int d) {
       this.width = w;
@@ -39,6 +40,7 @@ public class Level {
 
    public void load(String pathname) {
       try {
+          this.pathname = pathname;
          DataInputStream dis = new DataInputStream(new GZIPInputStream(new FileInputStream(new File(pathname))));
          dis.readFully(this.blocks);
          this.calcLightDepths(0, 0, this.width, this.height);
@@ -56,7 +58,7 @@ public class Level {
 
    public void save() {
       try {
-         DataOutputStream dos = new DataOutputStream(new GZIPOutputStream(new FileOutputStream(new File("level.dat"))));
+         DataOutputStream dos = new DataOutputStream(new GZIPOutputStream(new FileOutputStream(new File(this.pathname))));
          dos.write(this.blocks);
          dos.close();
       } catch (Exception var2) {

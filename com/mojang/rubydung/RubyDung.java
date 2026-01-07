@@ -37,6 +37,8 @@ public class RubyDung implements Runnable {
    private HitResult hitResult = null;
    private boolean running;
 
+   private String[] levels;
+
    private boolean menu_button_pressed;
 
    private FontRenderer fontRenderer;
@@ -46,7 +48,7 @@ public class RubyDung implements Runnable {
    private int hotbar_slot = 0;
    private int[] hotbar = {1,2,3,0,0,0,0,0,0,0};
 
-   private int game_mode = 0; // 0: Main menu | 100: In game | 101: Paused game
+   private int game_mode = 0; // 0: Main menu | 1: Save select | 10: Settings| 100: In game | 101: Paused game
     private boolean dev_command_pause = true;
 
    public void init() throws LWJGLException, IOException {
@@ -57,6 +59,8 @@ public class RubyDung implements Runnable {
       this.fogColor.put(new float[]{(float)(col >> 16 & 255) / 255.0F, (float)(col >> 8 & 255) / 255.0F, (float)(col & 255) / 255.0F, 1.0F});
       this.fogColor.flip();
       Display.setDisplayMode(new DisplayMode(1024, 768));
+      Display.setResizable(true);
+
       Display.create();
       Display.setTitle("BlockCraft");
       Keyboard.create();
@@ -75,11 +79,12 @@ public class RubyDung implements Runnable {
       GL11.glMatrixMode(5888);
 
       this.game_mode = 0;
-      //this.game_mode = 100;
+      this.game_mode = 100;
+       this.game_mode = 0;
 
       this.level = new Level(64, 64, 64);
       //this.level.load("level.dat");
-      this.level.load("level.dat");
+      //this.level.load("level.dat");
       this.menu_level = new Level(64, 64, 64);
       this.menu_level.load("titlescreen.dat");
 
@@ -93,6 +98,10 @@ public class RubyDung implements Runnable {
       this.player = new Player(this.level);
 
       this.running = true;
+
+      this.levels = new String[]{"level.dat","level_2.dat"};
+
+       //this.level.load("levels\\"+this.levels[0]);
 
       Mouse.setGrabbed(true);
 
@@ -117,11 +126,15 @@ public class RubyDung implements Runnable {
       long lastTime = System.currentTimeMillis();
       int frames = 0;
       this.timer.advanceTime();
+       Mouse.setGrabbed(true);
 
       try {
          while(running && !Display.isCloseRequested()) {
             if (game_mode == 100) {
                this.timer.advanceTime();
+               if(!Mouse.isGrabbed()){
+                   Mouse.setGrabbed(true);
+               }
             }else {
                this.timer.advanceTime();
             }
@@ -131,7 +144,18 @@ public class RubyDung implements Runnable {
             if (game_mode == 100) {
                this.render(this.timer.a);
                this.devkeybinds();
-               Mouse.setGrabbed(true);
+
+
+                if (Keyboard.isKeyDown(1)) {
+                    if (!this.menu_button_pressed) {
+                        game_mode = 101;
+                        System.out.println("paused!");
+                    }
+                    this.menu_button_pressed = true;
+                }else{
+                    this.menu_button_pressed = false;
+                }
+
             } else if (game_mode == 0){
                this.render_mainMenu(this.timer.a);
                 Mouse.setGrabbed(false);
@@ -139,6 +163,20 @@ public class RubyDung implements Runnable {
             } else if(game_mode == 1){
                render_save_select(this.timer.a);
                Mouse.setGrabbed(false);
+            } else if (game_mode == 101){
+                System.out.println("game is paused!");
+                //render_background(this.timer.a);
+                render_paused(this.timer.a);
+                if (Keyboard.isKeyDown(1)) {
+                    if (!this.menu_button_pressed) {
+                        game_mode = 100;
+                        System.out.println("unpaused!");
+                    }
+                    this.menu_button_pressed = true;
+                }else{
+                    this.menu_button_pressed = false;
+                }
+                //Display.update();
             }
             else{
                Display.update();
@@ -165,6 +203,8 @@ public class RubyDung implements Runnable {
          this.player.tick();
       }else if (this.game_mode == 0) {
          this.player.tick();
+      }else if (this.game_mode == 101) {
+          //this.player.tick();
       }
    }
 
@@ -259,6 +299,52 @@ public class RubyDung implements Runnable {
       }
 
    }
+
+    public void render_paused(float a) {
+        float xo = (float)Mouse.getDX();
+        float yo = (float)Mouse.getDY();
+
+        while(Keyboard.next()) {
+            if (Keyboard.getEventKey() == 28 && Keyboard.getEventKeyState()) {
+                this.level.save();
+            }
+        }
+
+        GL11.glClear(16640);
+        this.setupCamera(0);
+
+
+        GL11.glEnable(2884);
+        GL11.glEnable(2912);
+        GL11.glFogi(2917, 2048);
+        GL11.glFogf(2914, 0.2F);
+        GL11.glFog(2918, this.fogColor);
+        GL11.glDisable(2912);
+
+
+        this.levelRenderer.render(this.player, 0);
+
+
+
+        GL11.glEnable(2912);
+        this.levelRenderer.render(this.player, 1);
+        GL11.glDisable(3553);
+        GL11.glDisable(2912);
+
+        GL11.glMatrixMode(5889);
+        GL11.glLoadIdentity();
+        float aspectRatio = (float) width / (float) height;
+        GLU.gluOrtho2D(0,10*aspectRatio,0,10);
+        GL11.glMatrixMode(5888);
+        GL11.glLoadIdentity();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        this.levelRenderer.renderTex(this.hotbar[this.hotbar_slot]-1);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+        Display.update();
+    }
 
    public void render(float a) {
       float xo = (float)Mouse.getDX();
@@ -461,6 +547,9 @@ public class RubyDung implements Runnable {
             if (buttonIndex == 2){
                this.running = false;
             }
+            if (buttonIndex == 0){
+                this.game_mode = 1;
+            }
          }
          this.menu_button_pressed = true;
       }else{
@@ -505,13 +594,26 @@ public class RubyDung implements Runnable {
 
       int buttonMargin = 2;
       int buttonPos = 8;
+      if (buttonIndex == 0){
+          this.menuRenderer.textureOffset = 3;
+      } else {
+          this.menuRenderer.textureOffset = 0;
+      }
       this.menuRenderer.renderMenuBackground(buttonPos,buttonMargin,widthTiles,heightTiles);
       this.fontRenderer.renderText(buttonMargin+0.5f,buttonPos+0.5f,"SINGLEPLAYER",widthTiles,heightTiles);
-
+       if (buttonIndex == 1){
+           this.menuRenderer.textureOffset = 3;
+       } else {
+           this.menuRenderer.textureOffset = 0;
+       }
       buttonPos = 5;
       this.menuRenderer.renderMenuBackground(buttonPos,buttonMargin,widthTiles,heightTiles);
       this.fontRenderer.renderText(buttonMargin+0.5f,buttonPos+0.5f,"SETTINGS",widthTiles,heightTiles);
-
+       if (buttonIndex == 2){
+           this.menuRenderer.textureOffset = 3;
+       } else {
+           this.menuRenderer.textureOffset = 0;
+       }
       buttonPos = 2;
       this.menuRenderer.renderMenuBackground(buttonPos,buttonMargin,widthTiles,heightTiles);
       this.fontRenderer.renderText(buttonMargin+0.5f,buttonPos+0.5f,"QUIT",widthTiles,heightTiles);
@@ -541,18 +643,78 @@ public class RubyDung implements Runnable {
       GL11.glDisable(GL11.GL_DEPTH_TEST);
 
 
-      int buttonMargin = 2;
-      int buttonPos = 8;
-      this.menuRenderer.renderMenuBackground(buttonPos,buttonMargin,widthTiles,heightTiles);
-      this.fontRenderer.renderText(buttonMargin+0.5f,buttonPos+0.5f,"SINGLEPLAYER",widthTiles,heightTiles);
+      int buttonMargin = 1;
+      int buttonPos = 2;
+      //this.menuRenderer.renderMenuBackground(buttonPos,buttonMargin,widthTiles,heightTiles);
+       this.menuRenderer.renderMenuBackground(3,buttonMargin,heightTiles-(2+buttonPos),widthTiles,heightTiles);
+       buttonPos = heightTiles-3;
+      this.fontRenderer.renderText(1.5f,buttonPos+0.5f,"SELECT SAVE GAME",widthTiles,heightTiles);
 
+
+    /*
       buttonPos = 5;
       this.menuRenderer.renderMenuBackground(buttonPos,buttonMargin,widthTiles,heightTiles);
       this.fontRenderer.renderText(buttonMargin+0.5f,buttonPos+0.5f,"SETTINGS",widthTiles,heightTiles);
-
-      buttonPos = 2;
+*/
+      buttonPos = 4;
+      buttonMargin = 2;
       this.menuRenderer.renderMenuBackground(buttonPos,buttonMargin,widthTiles,heightTiles);
-      this.fontRenderer.renderText(buttonMargin+0.5f,buttonPos+0.5f,"QUIT",widthTiles,heightTiles);
+      this.fontRenderer.renderText(buttonMargin+0.5f,buttonPos+0.5f,"New game",widthTiles,heightTiles);
+
+
+
+      this.menuRenderer.renderMenuBackground(buttonPos,buttonMargin,widthTiles,heightTiles);
+      this.fontRenderer.renderText(buttonMargin+0.5f,buttonPos+0.5f,"New game",widthTiles,heightTiles);
+
+
+       float tileSizeX = (float) 1 / (float)widthTiles;
+       float tileSizeY = (float) 1 / (float)heightTiles;
+
+
+
+
+
+       buttonPos = heightTiles-5;
+       float mouseX = (float)Mouse.getX();
+       float mouseY = (float)Mouse.getY();
+      for (int i=0; i<levels.length;i++){
+
+          float x1 = tileSizeX*(buttonMargin+1);
+          float y1 = tileSizeY*(buttonPos+2-(i*2));
+          float x2 = x1-tileSizeX;
+          float y2 = y1-(tileSizeY*2);
+
+          x1 = x1*width;
+          y1 = y1*height;
+          x2 = x2*width;
+          y2 = y2*height;
+
+          //System.out.println(y1 + "," + mouseY);
+
+          if (mouseY < y1 && mouseY > y2){
+              System.out.println(i);
+              this.menuRenderer.textureOffset = 3;
+              if (Mouse.isButtonDown(0)){
+                  if (!this.menu_button_pressed) {
+                      level.load("levels//"+levels[i]);
+                      game_mode = 100;
+                      Mouse.setGrabbed(true);
+                      return;
+                  }
+                  this.menu_button_pressed = true;
+              }else{
+                  this.menu_button_pressed = false;
+              }
+          }else {
+              this.menuRenderer.textureOffset = 0;
+          }
+
+
+
+          this.menuRenderer.renderMenuBackground(buttonPos-(i*2),buttonMargin,widthTiles,heightTiles);
+          this.fontRenderer.renderText(buttonMargin+0.5f,buttonPos+0.5f-(i*2),levels[i],widthTiles,heightTiles);
+          this.menuRenderer.textureOffset = 0;
+      }
 
       //this.menu_levelRenderer.renderTex(this.hotbar[this.hotbar_slot]-1);
       GL11.glEnable(GL11.GL_DEPTH_TEST);
