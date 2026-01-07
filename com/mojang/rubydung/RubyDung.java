@@ -51,6 +51,8 @@ public class RubyDung implements Runnable {
    private int game_mode = 0; // 0: Main menu | 1: Save select | 10: Settings| 100: In game | 101: Paused game
     private boolean dev_command_pause = true;
 
+    float fps;
+
    public void init() throws LWJGLException, IOException {
       int col = 920330;
       float fr = 0.5F;
@@ -82,7 +84,7 @@ public class RubyDung implements Runnable {
       this.game_mode = 100;
        this.game_mode = 0;
 
-      this.level = new Level(64, 64, 64);
+      this.level = new Level(256, 256, 64);
       //this.level.load("level.dat");
       //this.level.load("level.dat");
       this.menu_level = new Level(64, 64, 64);
@@ -186,6 +188,7 @@ public class RubyDung implements Runnable {
 
             while(System.currentTimeMillis() >= lastTime + 1000L) {
                System.out.println(frames + " fps, " + Chunk.updates);
+                fps = frames;
                Chunk.updates = 0;
                lastTime += 1000L;
                frames = 0;
@@ -335,12 +338,22 @@ public class RubyDung implements Runnable {
         GL11.glMatrixMode(5889);
         GL11.glLoadIdentity();
         float aspectRatio = (float) width / (float) height;
+        int heightTiles = 32;
+        int widthTiles = (int)((float)heightTiles * aspectRatio);
+
         GLU.gluOrtho2D(0,10*aspectRatio,0,10);
         GL11.glMatrixMode(5888);
         GL11.glLoadIdentity();
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         this.levelRenderer.renderTex(this.hotbar[this.hotbar_slot]-1);
+
+        GL11.glMatrixMode(5889);
+        GL11.glLoadIdentity();
+        GLU.gluOrtho2D(0,1,0,1);
+        this.fontRenderer.renderText(widthTiles-6,heightTiles-1,"Paused",widthTiles,heightTiles);
+        this.fontRenderer.renderText(0,heightTiles-1,"FPS: "+fps,widthTiles,heightTiles);
+
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
 
@@ -352,6 +365,10 @@ public class RubyDung implements Runnable {
       float yo = (float)Mouse.getDY();
       this.player.turn(xo, yo);
       this.pick(a);
+
+       float aspectRatio = (float) width / (float) height;
+       int heightTiles = 16;
+       int widthTiles = (int)((float)heightTiles * aspectRatio);
 
       while(Mouse.next()) {
 
@@ -439,13 +456,23 @@ public class RubyDung implements Runnable {
 
       GL11.glMatrixMode(5889);
       GL11.glLoadIdentity();
-      float aspectRatio = (float) width / (float) height;
+      //float aspectRatio = (float) width / (float) height;
       GLU.gluOrtho2D(0,10*aspectRatio,0,10);
       GL11.glMatrixMode(5888);
       GL11.glLoadIdentity();
       GL11.glEnable(GL11.GL_TEXTURE_2D);
       GL11.glDisable(GL11.GL_DEPTH_TEST);
       this.levelRenderer.renderTex(this.hotbar[this.hotbar_slot]-1);
+
+
+      heightTiles = 32;
+      widthTiles = (int)((float)heightTiles * aspectRatio);
+       GL11.glMatrixMode(5889);
+       GL11.glLoadIdentity();
+       GLU.gluOrtho2D(0,1,0,1);
+       this.fontRenderer.renderText(0,heightTiles-1,"FPS: "+fps,widthTiles,heightTiles);
+
+
       GL11.glEnable(GL11.GL_DEPTH_TEST);
       GL11.glDisable(GL11.GL_TEXTURE_2D);
 
