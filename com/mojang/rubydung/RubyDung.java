@@ -52,6 +52,7 @@ public class RubyDung implements Runnable {
     private boolean dev_command_pause = true;
 
     float fps;
+    final String version = "0.0.1b";
 
    public void init() throws LWJGLException, IOException {
       int col = 920330;
@@ -352,7 +353,8 @@ public class RubyDung implements Runnable {
         GL11.glLoadIdentity();
         GLU.gluOrtho2D(0,1,0,1);
         this.fontRenderer.renderText(widthTiles-6,heightTiles-1,"Paused",widthTiles,heightTiles);
-        this.fontRenderer.renderText(0,heightTiles-1,"FPS: "+fps,widthTiles,heightTiles);
+        this.fontRenderer.renderText(0,heightTiles-1,this.version,widthTiles,heightTiles);
+        this.fontRenderer.renderText(0,heightTiles-2,(int)fps+" fps",widthTiles,heightTiles);
 
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -470,7 +472,8 @@ public class RubyDung implements Runnable {
        GL11.glMatrixMode(5889);
        GL11.glLoadIdentity();
        GLU.gluOrtho2D(0,1,0,1);
-       this.fontRenderer.renderText(0,heightTiles-1,"FPS: "+fps,widthTiles,heightTiles);
+       this.fontRenderer.renderText(0,heightTiles-1,this.version,widthTiles,heightTiles);
+       this.fontRenderer.renderText(0,heightTiles-2,(int)fps+" fps",widthTiles,heightTiles);
 
 
       GL11.glEnable(GL11.GL_DEPTH_TEST);
