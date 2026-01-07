@@ -16,7 +16,7 @@ public class FontRenderer {
         float v0 = 0.0F;
 
         v0 = (((float) (tex)-(tex % 16))/16)/16;
-        System.out.println((u0*16)+","+(v0*16));
+        //System.out.println((u0*16)+","+(v0*16));
 
         float v1 = v0 + 0.0624375F;
         float c1 = 1.0F;

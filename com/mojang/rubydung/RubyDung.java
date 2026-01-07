@@ -35,6 +35,9 @@ public class RubyDung implements Runnable {
    private IntBuffer viewportBuffer = BufferUtils.createIntBuffer(16);
    private IntBuffer selectBuffer = BufferUtils.createIntBuffer(2000);
    private HitResult hitResult = null;
+   private boolean running;
+
+   private boolean menu_button_pressed;
 
    private FontRenderer fontRenderer;
    //private Tesselator t = new Tesselator();
@@ -89,6 +92,8 @@ public class RubyDung implements Runnable {
 
       this.player = new Player(this.level);
 
+      this.running = true;
+
       Mouse.setGrabbed(true);
 
 
@@ -114,7 +119,7 @@ public class RubyDung implements Runnable {
       this.timer.advanceTime();
 
       try {
-         while(!Keyboard.isKeyDown(1) && !Display.isCloseRequested()) {
+         while(running && !Display.isCloseRequested()) {
             if (game_mode == 100) {
                this.timer.advanceTime();
             }else {
@@ -131,7 +136,11 @@ public class RubyDung implements Runnable {
                this.render_mainMenu(this.timer.a);
                 Mouse.setGrabbed(false);
 
-            }else{
+            } else if(game_mode == 1){
+               render_save_select(this.timer.a);
+               Mouse.setGrabbed(false);
+            }
+            else{
                Display.update();
             }
             ++frames;
@@ -372,17 +381,6 @@ public class RubyDung implements Runnable {
 
       this.pick(a);
 
-      float mouseX = (float)Mouse.getX();
-      float mouseY = (float)Mouse.getY();
-
-      while(Mouse.next()) {
-         System.out.println(mouseX + "," + mouseY);
-         //System.out.println(hotbar_slot);
-         //System.out.println("Current index"+this.hotbar[hotbar_slot]);
-         if (Mouse.getEventButton() == 0) {
-            System.out.println(mouseX + "," + mouseY);
-         }
-      }
 
 
       GL11.glClear(16640);
@@ -417,6 +415,58 @@ public class RubyDung implements Runnable {
 
       render_background(a);
 
+      float mouseX = (float)Mouse.getX();
+      float mouseY = (float)Mouse.getY();
+
+
+
+      while(Mouse.next()) {
+
+         //System.out.println(mouseX + "," + mouseY);
+         //System.out.println(hotbar_slot);
+         //System.out.println("Current index"+this.hotbar[hotbar_slot]);
+         if (Mouse.getEventButton() == 0) {
+            //System.out.println(mouseX + "," + mouseY);
+         }
+      }
+      int buttonIndex = -1;
+      if (mouseX > 100 && mouseX < 929){
+
+
+         if (mouseY < 478){
+            if (mouseY > 384) {
+               buttonIndex = 0;
+
+            } else{
+               if (mouseY < 333) {
+
+                  if (mouseY > 240){
+                     buttonIndex = 1;
+                  } else{
+
+                     if (mouseY < 190){
+                        if (mouseY > 95){
+                           buttonIndex = 2;
+                           //System.out.println(mouseX + "," + mouseY);
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
+      if (Mouse.isButtonDown(0)){
+         if (!this.menu_button_pressed) {
+            System.out.println(buttonIndex);
+            if (buttonIndex == 2){
+               this.running = false;
+            }
+         }
+         this.menu_button_pressed = true;
+      }else{
+         this.menu_button_pressed = false;
+      }
+
 
 
       //GL11.glEnable(GL11.GL_ALPHA);
@@ -439,6 +489,44 @@ public class RubyDung implements Runnable {
       }
 
        */
+      GL11.glMatrixMode(5889);
+      GL11.glLoadIdentity();
+      float aspectRatio = (float) width / (float) height;
+      //GLU.gluOrtho2D(0,1*aspectRatio,0,1);
+      int heightTiles = 16;
+      int widthTiles = (int)((float)heightTiles * aspectRatio);
+      //System.out.println(heightTiles + "," + widthTiles);
+      GLU.gluOrtho2D(0,1,0,1);
+      GL11.glMatrixMode(5888);
+      GL11.glLoadIdentity();
+      GL11.glEnable(GL11.GL_TEXTURE_2D);
+      GL11.glDisable(GL11.GL_DEPTH_TEST);
+
+
+      int buttonMargin = 2;
+      int buttonPos = 8;
+      this.menuRenderer.renderMenuBackground(buttonPos,buttonMargin,widthTiles,heightTiles);
+      this.fontRenderer.renderText(buttonMargin+0.5f,buttonPos+0.5f,"SINGLEPLAYER",widthTiles,heightTiles);
+
+      buttonPos = 5;
+      this.menuRenderer.renderMenuBackground(buttonPos,buttonMargin,widthTiles,heightTiles);
+      this.fontRenderer.renderText(buttonMargin+0.5f,buttonPos+0.5f,"SETTINGS",widthTiles,heightTiles);
+
+      buttonPos = 2;
+      this.menuRenderer.renderMenuBackground(buttonPos,buttonMargin,widthTiles,heightTiles);
+      this.fontRenderer.renderText(buttonMargin+0.5f,buttonPos+0.5f,"QUIT",widthTiles,heightTiles);
+
+      //this.menu_levelRenderer.renderTex(this.hotbar[this.hotbar_slot]-1);
+      GL11.glEnable(GL11.GL_DEPTH_TEST);
+      GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+      Display.update();
+   }
+
+   public void render_save_select(float a){
+
+      render_background(a);
+
       GL11.glMatrixMode(5889);
       GL11.glLoadIdentity();
       float aspectRatio = (float) width / (float) height;
