@@ -30,6 +30,17 @@
 
     <build>
         <plugins>
+                 <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-jar-plugin</artifactId>
+             <version>3.2.0</version>
+             <configuration>
+        <archive>
+            <manifest>
+                <addClasspath>true</addClasspath>
+                <mainClass>com.mojang.rubydung.RubyDung</mainClass>
+            </manifest>
+                 </archive>
+             </configuration>
             <plugin>
                 <groupId>com.googlecode.mavennatives</groupId>
                 <artifactId>maven-nativedependencies-plugin</artifactId>
