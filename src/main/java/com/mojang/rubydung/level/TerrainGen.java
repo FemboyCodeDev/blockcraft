@@ -7,13 +7,46 @@ public class TerrainGen {
     public static PerlinNoise perlin = new PerlinNoise(100);
     public static int blockAtPos(int x, int y, int z){
         if (y < calculateSurfaceHeight(x,z)-1){
-            return 2;
+
+            return 1;
         }else if (y < calculateSurfaceHeight(x,z)){
+            if (shouldPutTree(x,y,z)){
+                return 4;
+            }
             return 1;
         }else if (y < 128){
             return 5;
         }
         return 0;
+    }
+    public static boolean canHaveTree(int x, int y, int z){
+
+        for (int dx = -8; dx < 8; dx ++){
+            for (int dz = -8; dz < 8; dz ++) {
+                if (Math.abs(calculateSurfaceHeight(dx + x, z+dz)-y) > 4) {
+                    return false;
+                }
+            }
+
+        }
+        return true;
+    }
+
+    public static boolean shouldPutTree(int x, int y, int z){
+        if (!canHaveTree(x,y,z)){return false;}
+        if (perlin.getNoise(x * 10.1254, z * 10.1254) > 0.5){return true;}
+        /*
+        float value = perlin.getNoise(x * 1, y * 1);
+        for (int dx = -8; dx < 8; dx ++){
+            for (int dz = -8; dz < 8; dz ++) {
+                if (perlin.getNoise((x+dx) * 1, (z+dz) * 1) > value) {
+                    return false;
+                }
+            }
+
+        }
+        */
+        return false;
     }
     public static float calculateSurfaceHeight(int x, int z){
         return (float) (128+getFractalNoise(x*frequency,z*frequency,4,0.5,2.0)*64);
