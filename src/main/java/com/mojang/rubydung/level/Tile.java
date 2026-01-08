@@ -5,6 +5,7 @@ public class Tile {
    public static Tile grass = new Tile(0);
    public static Tile rock = new Tile(1);
    public static Tile plank = new Tile(2);
+   public static Tile dirt = new Tile(3);
 
 
 

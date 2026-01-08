@@ -20,7 +20,7 @@ public class Chunk {
    public static int rebuiltThisFrame = 0;
    public static int updates = 0;
 
-   public final Tile[] blocks = {Tile.air,Tile.grass,Tile.rock,Tile.plank};
+   public final Tile[] blocks = {Tile.air,Tile.grass,Tile.rock,Tile.plank,Tile.dirt};
 
    public Chunk(Level level, int x0, int y0, int z0, int x1, int y1, int z1) {
       this.level = level;

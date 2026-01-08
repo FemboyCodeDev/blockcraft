@@ -47,7 +47,8 @@ public class RubyDung implements Runnable {
    //private static int texture = Textures.loadTexture("/terrain.png", 9728);
 
    private int hotbar_slot = 0;
-   private int[] hotbar = {1,2,3,0,0,0,0,0,0,0};
+   private int[] hotbar = {1,2,3,4,0,0,0,0,0,0};
+
 
    private int game_mode = 0; // 0: Main menu | 1: Save select | 10: Settings| 100: In game | 101: Paused game
     private boolean dev_command_pause = true;
