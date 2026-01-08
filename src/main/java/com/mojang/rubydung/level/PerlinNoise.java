@@ -3,76 +3,69 @@ package com.mojang.rubydung.level;
 import java.util.Random;
 
 public class PerlinNoise {
+    private final int[] p = new int[512];
 
-    // Maximum size of the octaves
-    public static final int MAX_OCTAVES = 6;
-    public static final double MIN_OCTAVE_SIZE = 1.0;
-    public static final double MAX_OCTAVE_SIZE = 10.0;
-
-    // Seed for the random number generator
-    private int seed;
-    private double[] octaveSizes;
-    private double[][][] gradients;
-
-    // Perlin noise function
-    public double getNoise(double x, double y) {
-        return perlin(x / octaveSizes[0], y / octaveSizes[0]);
-    }
-
-    // Initializes the Perlin noise with a random seed and octave sizes.
     public PerlinNoise(int seed) {
-        this.seed = seed;
-        octaveSizes = new double[MAX_OCTAVES];
-        gradients = new double[MAX_OCTAVES][256][64];
-
         Random rand = new Random(seed);
-        for (int i = 0; i < MAX_OCTAVES; i++) {
-            octaveSizes[i] = Math.random() * (MAX_OCTAVE_SIZE - MIN_OCTAVE_SIZE) + MIN_OCTAVE_SIZE;
 
-            for (int j = 0; j < 256; j++) {
-                int index = (j % 16) * 3;
-                System.out.println(index);
-                //index = 0;
+        // Fill permutation table with values 0-255
+        for (int i = 0; i < 256; i++) {
+            p[i] = i;
+        }
 
-                gradients[i][j][index] = rand.nextDouble();
-
-                // Generate custom gradients based on octaves and indices
-                if (i == 0 && j >= 128) {
-                    gradients[i][j][index + 1] += rand.nextBoolean() ? Math.sin(j / 16.0 * Math.PI) : -Math.sin(j / 16.0 * Math.PI);
-                }
-            }
+        // Shuffle the table
+        for (int i = 0; i < 256; i++) {
+            int j = rand.nextInt(256);
+            int temp = p[i];
+            p[i] = p[j];
+            p[j] = temp;
+            // Duplicate the array to avoid overflow checks
+            p[i + 256] = p[i];
+            p[j + 256] = p[j];
         }
     }
 
-    // Perlin noise function
-    private double perlin(double x, double y) {
-        int xi = (int)x;
-        int yi = (int)y;
+    public double getNoise(double x, double y) {
+        // Find unit grid cell coordinates
+        int xi = (int) Math.floor(x) & 255;
+        int yi = (int) Math.floor(y) & 255;
 
-        double xf = x - xi;
-        double yf = y - yi;
+        // Relative coordinates in cell
+        double xf = x - Math.floor(x);
+        double yf = y - Math.floor(y);
 
-        double n00 = gradient(xi, yi, 0);
-        double n01 = gradient((xi + 1), yi, 0);
-        double n10 = gradient(xi, (yi + 1), 0);
-        double n11 = gradient((xi + 1), (yi + 1), 0);
+        // Compute fade curves
+        double u = fade(xf);
+        double v = fade(yf);
 
-        double interpo01 = lerp(n00, n01, xf);
-        double interpo10 = lerp(n10, n11, xf);
+        // Hash coordinates of the 4 corners
+        int aa = p[p[xi] + yi];
+        int ab = p[p[xi] + yi + 1];
+        int ba = p[p[xi + 1] + yi];
+        int bb = p[p[xi + 1] + yi + 1];
 
-        return lerp(interpo01, interpo10, yf);
+        // Add blended results from 4 corners
+        double x1 = lerp(grad(aa, xf, yf), grad(ba, xf - 1, yf), u);
+        double x2 = lerp(grad(ab, xf, yf - 1), grad(bb, xf - 1, yf - 1), u);
+
+        return lerp(x1, x2, v);
     }
 
-    // Gradient function
-    private double gradient(int x, int y, int octave) {
-        int index = (x + y * 257) % 256;
-        return gradients[octave][index][0];
+    // Perlin's smoothing function: 6t^5 - 15t^4 + 10t^3
+    private double fade(double t) {
+        return t * t * t * (t * (t * 6 - 15) + 10);
     }
 
-    // Linear interpolation function
     private double lerp(double a, double b, double t) {
-        return a * (1 - t) + b * t;
+        return a + t * (b - a);
     }
 
-
+    // Calculates the dot product of a random gradient vector and the distance vector
+    private double grad(int hash, double x, double y) {
+        // Take the first 4 bits of the hash (8 directions)
+        int h = hash & 7;
+        double u = h < 4 ? x : y;
+        double v = h < 4 ? y : x;
+        return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
+    }
 }

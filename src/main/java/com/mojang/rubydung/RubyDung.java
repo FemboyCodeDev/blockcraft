@@ -102,7 +102,7 @@ public class RubyDung implements Runnable {
       this.game_mode = 100;
        this.game_mode = 0;
 
-      this.level = new Level(256, 256, 64);
+      this.level = new Level(256, 256, 256);
       //this.level.load("level.dat");
       //this.level.load("level.dat");
       this.menu_level = new Level(64, 64, 64);
