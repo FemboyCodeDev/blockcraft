@@ -53,6 +53,8 @@ jobs:
         cp target/*.jar release_bundle/
         cp -r target/natives/ release_bundle/
         cp Font-16x16.png terrain.png UI-texture.png release_bundle/
+        cp titlescreen.dat release_bundle/
+        mkdir release_bundle/levels
         echo "java -Djava.library.path=./natives -jar cavegame-1.0-SNAPSHOT.jar" > release_bundle/run.bat
         zip -r cavegame-release.zip release_bundle/
 
