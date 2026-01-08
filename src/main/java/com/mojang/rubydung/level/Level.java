@@ -19,12 +19,16 @@ public class Level {
    private ArrayList<LevelListener> levelListeners = new ArrayList();
    public String pathname;
 
+   public TerrainGen terrainGen;
+
    public Level(int w, int h, int d) {
       this.width = w;
       this.height = h;
       this.depth = d;
       this.blocks = new byte[w * h * d];
       this.lightDepths = new int[w * h];
+
+      terrainGen = new TerrainGen();
 
       for(int x = 0; x < w; ++x) {
          for(int y = 0; y < d; ++y) {
