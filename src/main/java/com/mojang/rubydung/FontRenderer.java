@@ -8,7 +8,7 @@ public class FontRenderer {
     private static int texture = Textures.loadTexture("Font-16x16.png", 9728);
 
     private String charMap = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz 0123456789.:>~<^           !"+'"'+"£$%_";
-
+    public float offset = 0;
 
     public void renderTex(int tex,int height, int width, float x,float y){
         float u0 = ((float) (tex % 16))/ 16.0F;
@@ -32,6 +32,9 @@ public class FontRenderer {
         float y1 = tileSizeY*(y+1);
         float x2 = x1-tileSizeX;
         float y2 = y1-tileSizeY;
+
+        y1 += offset;
+        y2 += offset;
 
         GL11.glBindTexture(3553, texture);
         GL11.glEnable(GL11.GL_BLEND);

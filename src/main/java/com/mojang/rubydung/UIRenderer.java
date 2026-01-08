@@ -9,6 +9,7 @@ public class UIRenderer {
 
     private static int[] boxTextures = {0,1,2,16,17,18,32,33,34};
     public int textureOffset = 0;
+    public float offset;
 
 
     public void renderTex(int tex,int height, int width, int x,int y){
@@ -33,6 +34,9 @@ public class UIRenderer {
         float y1 = tileSizeY*(y+1);
         float x2 = x1-tileSizeX;
         float y2 = y1-tileSizeY;
+
+        y1 += this.offset;
+        y2 += this.offset;
 
         GL11.glBindTexture(3553, texture);
         //GL11.glEnable(GL11.GL_BLEND);
@@ -65,43 +69,52 @@ public class UIRenderer {
             }
         }
     }
-    public void renderMenuBackground(int buttonPosY,int buttonMargin,int buttonHeight,int widthTiles,int heightTiles){
-        if (buttonHeight == 2){
+    public void renderMenuBackground(int buttonPosY,int buttonMargin,int buttonHeight,int widthTiles,int heightTiles,int mode){
+        if (buttonHeight == 2 && mode == 0){
             renderMenuBackgroundThin(buttonPosY,buttonMargin,widthTiles,heightTiles);
-        }else if(buttonHeight > 2){
+        }else if(buttonHeight > 2 || mode !=0){
             //renderMenuBackgroundThin(buttonPosY,buttonMargin,widthTiles,heightTiles);
             //renderMenuBackgroundThin(buttonPosY+buttonHeight-2,buttonMargin,widthTiles,heightTiles);
             for (int x = buttonMargin; x<widthTiles-buttonMargin; x++) {
                 for (int y = buttonPosY; y<buttonPosY+buttonHeight; y++) {
-                //this.menuRenderer.renderTex(17, heightTiles, widthTiles, x, 5);
-                if (x == buttonMargin && y == buttonPosY+buttonHeight-1){
-                    this.renderTex(0, heightTiles, widthTiles, x, y);
-                    //this.renderTex(32, heightTiles, widthTiles, x, buttonPosY);
-                }else if(x==widthTiles-buttonMargin-1  && y == buttonPosY+buttonHeight-1){
-                    this.renderTex(2, heightTiles, widthTiles, x, y);
-                    //this.renderTex(34, heightTiles, widthTiles, x, buttonPosY);
-                }else if (y == buttonPosY+buttonHeight-1){
-                    this.renderTex(1, heightTiles, widthTiles, x, y);
-                }
-                else if (x == buttonMargin && y == buttonPosY){
-                    this.renderTex(32, heightTiles, widthTiles, x, y);
-                    //this.renderTex(32, heightTiles, widthTiles, x, buttonPosY);
-                }else if(x==widthTiles-buttonMargin-1  && y == buttonPosY){
-                    this.renderTex(34, heightTiles, widthTiles, x, y);
-                    //this.renderTex(34, heightTiles, widthTiles, x, buttonPosY);
-                }else if (y == buttonPosY){
-                    this.renderTex(33, heightTiles, widthTiles, x, y);
-                } else if (x == buttonMargin){
-                    this.renderTex(16, heightTiles, widthTiles, x, y);
-                    //this.renderTex(32, heightTiles, widthTiles, x, buttonPosY);
-                }else if (x ==widthTiles-buttonMargin-1){
-                    this.renderTex(18, heightTiles, widthTiles, x, y);
-                    //this.renderTex(32, heightTiles, widthTiles, x, buttonPosY);
-                }
-                else {
-                    this.renderTex(17, heightTiles, widthTiles, x, y);
-                    //this.renderTex(33, heightTiles, widthTiles, x, buttonPosY);
-                }
+                    //this.menuRenderer.renderTex(17, heightTiles, widthTiles, x, 5);
+                    if (x == buttonMargin && y == buttonPosY+buttonHeight-1){
+                        if(mode == 0) {
+                            this.renderTex(0+textureOffset, heightTiles, widthTiles, x, y);
+                        }
+                    }else if(x==widthTiles-buttonMargin-1  && y == buttonPosY+buttonHeight-1){
+                        if(mode == 0) {
+                            this.renderTex(2 + textureOffset, heightTiles, widthTiles, x, y);
+                        }
+                    }else if (y == buttonPosY+buttonHeight-1){
+                        if(mode == 0) {
+                            this.renderTex(1+textureOffset, heightTiles, widthTiles, x, y);
+                        }
+                    }
+                    else if (x == buttonMargin && y == buttonPosY){
+
+                        this.renderTex(32+textureOffset, heightTiles, widthTiles, x, y);
+                        //this.renderTex(32, heightTiles, widthTiles, x, buttonPosY);
+                    }else if(x==widthTiles-buttonMargin-1  && y == buttonPosY){
+                        this.renderTex(34+textureOffset, heightTiles, widthTiles, x, y);
+                        //this.renderTex(34, heightTiles, widthTiles, x, buttonPosY);
+                    }else if (y == buttonPosY){
+                        this.renderTex(33+textureOffset, heightTiles, widthTiles, x, y);
+                    } else if (x == buttonMargin){
+                        if(mode == 0|| mode == 1) {
+                            this.renderTex(16 + textureOffset, heightTiles, widthTiles, x, y);
+                        }
+                        //this.renderTex(32, heightTiles, widthTiles, x, buttonPosY);
+                    }else if (x ==widthTiles-buttonMargin-1){
+                        this.renderTex(18+textureOffset, heightTiles, widthTiles, x, y);
+                        //this.renderTex(32, heightTiles, widthTiles, x, buttonPosY);
+                    }
+                    else {
+                        if(mode == 0 || mode == 1) {
+                            this.renderTex(17+textureOffset, heightTiles, widthTiles, x, y);
+                        }
+                        //this.renderTex(33, heightTiles, widthTiles, x, buttonPosY);
+                    }
                 }
             }
 
@@ -109,6 +122,15 @@ public class UIRenderer {
         }
     }
     public void renderMenuBackground(int buttonPosX,int buttonMargin,int widthTiles,int heightTiles){
-        renderMenuBackground( buttonPosX, buttonMargin,2,widthTiles, heightTiles);
+        renderMenuBackground( buttonPosX, buttonMargin,2,widthTiles, heightTiles,0);
+    }
+    public void renderMenuBackground(int buttonPosY,int buttonMargin,int buttonHeight,int widthTiles,int heightTiles){
+        renderMenuBackground( buttonPosY, buttonMargin,buttonHeight,widthTiles, heightTiles,0);
+    }
+    public void renderMenuBackgroundBase(int buttonPosX,int buttonMargin,int widthTiles,int heightTiles){
+        renderMenuBackground( buttonPosX, buttonMargin,2,widthTiles, heightTiles,0);
+    }
+    public void renderMenuBackgroundBase(int buttonPosY,int buttonMargin,int buttonHeight,int widthTiles,int heightTiles){
+        renderMenuBackground( buttonPosY, buttonMargin,buttonHeight,widthTiles, heightTiles,1);
     }
 }
