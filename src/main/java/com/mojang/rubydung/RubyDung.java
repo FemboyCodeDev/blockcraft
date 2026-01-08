@@ -67,7 +67,7 @@ public class RubyDung implements Runnable {
     private boolean vsync = false;
 
     float fps;
-    final String version = "0.0.1b";
+    final String version = "0.0.1c";
 
    public void init() throws LWJGLException, IOException {
       int col = 920330;
