@@ -1,10 +1,14 @@
 package src.main.java.com.mojang.rubydung;
 
+import com.mojang.rubydung.TextInput;
 import src.main.java.com.mojang.rubydung.level.Chunk;
 import src.main.java.com.mojang.rubydung.level.Level;
 import src.main.java.com.mojang.rubydung.level.LevelRenderer;
+import com.mojang.rubydung.*;
+import src.main.*;
 
 import java.awt.Component;
+import java.io.File;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -36,6 +40,11 @@ public class RubyDung implements Runnable {
    private HitResult hitResult = null;
    private boolean running;
 
+   private String new_game_name;
+   private boolean editing_game_name;
+
+   private TextInput textInput;
+
 
 
    private String[] levels;
@@ -50,7 +59,7 @@ public class RubyDung implements Runnable {
    private int[] hotbar = {1,2,3,4,0,0,0,0,0,0};
 
 
-   private int game_mode = 0; // 0: Main menu | 1: Save select | 10: Settings| 100: In game | 101: Paused game
+   private int game_mode = 0; // 0: Main menu | 1: Save select | 2: Create Save | 10: Settings| 100: In game | 101: Paused game
     private boolean dev_command_pause = true;
 
     float fps;
@@ -107,8 +116,11 @@ public class RubyDung implements Runnable {
       this.running = true;
 
       this.levels = new String[]{"level.dat","level_2.dat"};
+      this.levels = GetFilesInFolder.getFilenamesInFolder(new File("levels")).toArray(new String[0]);
 
        //this.level.load("levels\\"+this.levels[0]);
+
+       this.textInput = new TextInput();
 
       Mouse.setGrabbed(true);
 
@@ -170,7 +182,11 @@ public class RubyDung implements Runnable {
             } else if(game_mode == 1){
                render_save_select(this.timer.a);
                 if(Mouse.isGrabbed()){Mouse.setGrabbed(false);}
-            } else if (game_mode == 101){
+            } else if (game_mode == 2){
+                render_save_new(this.timer.a);
+                if(Mouse.isGrabbed()){Mouse.setGrabbed(false);}
+            }
+            else if (game_mode == 101){
                 if(Mouse.isGrabbed()){Mouse.setGrabbed(false);}
                 System.out.println("game is paused!");
                 //render_background(this.timer.a);
@@ -197,6 +213,8 @@ public class RubyDung implements Runnable {
                Chunk.updates = 0;
                lastTime += 1000L;
                frames = 0;
+               //this.width = Display.getWidth(); #TODO: Make scaling work
+               //this.height = Display.getHeight();
             }
          }
       } catch (Exception var10) {
@@ -698,8 +716,7 @@ public class RubyDung implements Runnable {
 
 
 
-      this.menuRenderer.renderMenuBackground(buttonPos,buttonMargin,widthTiles,heightTiles);
-      this.fontRenderer.renderText(buttonMargin+0.5f,buttonPos+0.5f,"New game",widthTiles,heightTiles);
+
 
 
        float tileSizeX = (float) 1 / (float)widthTiles;
@@ -707,17 +724,34 @@ public class RubyDung implements Runnable {
 
 
 
+       float mouseX = (float)Mouse.getX();
+       float mouseY = (float)Mouse.getY();
+
+       float x1 = tileSizeX*(buttonMargin+1);
+       float y1 = tileSizeY*(buttonPos+2);
+       float x2 = x1-tileSizeX;
+       float y2 = y1-(tileSizeY*2);
+
+       x1 = x1*width;
+       y1 = y1*height;
+       x2 = x2*width;
+       y2 = y2*height;
+
+       if (mouseY < y1 && mouseY > y2){this.menuRenderer.textureOffset = 3;if (Mouse.isButtonDown(0)){this.game_mode = 2;this.new_game_name = "new game";return;}} else{this.menuRenderer.textureOffset = 0;}
+
+       this.menuRenderer.renderMenuBackground(buttonPos,buttonMargin,widthTiles,heightTiles);
+       this.fontRenderer.renderText(buttonMargin+0.5f,buttonPos+0.5f,"New game",widthTiles,heightTiles);
 
 
        buttonPos = heightTiles-5;
-       float mouseX = (float)Mouse.getX();
-       float mouseY = (float)Mouse.getY();
+
+
       for (int i=0; i<levels.length;i++){
 
-          float x1 = tileSizeX*(buttonMargin+1);
-          float y1 = tileSizeY*(buttonPos+2-(i*2));
-          float x2 = x1-tileSizeX;
-          float y2 = y1-(tileSizeY*2);
+          x1 = tileSizeX*(buttonMargin+1);
+          y1 = tileSizeY*(buttonPos+2-(i*2));
+          x2 = x1-tileSizeX;
+          y2 = y1-(tileSizeY*2);
 
           x1 = x1*width;
           y1 = y1*height;
@@ -731,6 +765,7 @@ public class RubyDung implements Runnable {
               this.menuRenderer.textureOffset = 3;
               if (Mouse.isButtonDown(0)){
                   if (!this.menu_button_pressed) {
+
                       level.load("levels//"+levels[i]);
                       game_mode = 100;
                       Mouse.setGrabbed(true);
@@ -757,6 +792,125 @@ public class RubyDung implements Runnable {
 
       Display.update();
    }
+
+    public void render_save_new(float a){
+
+        render_background(a);
+        GL11.glMatrixMode(5889);
+        GL11.glLoadIdentity();
+        float aspectRatio = (float) width / (float) height;
+        int heightTiles = 16;
+        int widthTiles = (int)((float)heightTiles * aspectRatio);
+        GLU.gluOrtho2D(0,1,0,1);
+        GL11.glMatrixMode(5888);
+        GL11.glLoadIdentity();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+
+        int buttonMargin = 1;
+        int buttonPos = 2;
+        this.menuRenderer.renderMenuBackground(3,buttonMargin,heightTiles-(2+buttonPos),widthTiles,heightTiles);
+        buttonPos = heightTiles-3;
+        this.fontRenderer.renderText(1.5f,buttonPos+0.5f,"NEW GAME",widthTiles,heightTiles);
+
+        buttonPos = 4;
+        buttonMargin = 2;
+        //this.menuRenderer.renderMenuBackground(buttonPos,buttonMargin,widthTiles,heightTiles);
+        //this.fontRenderer.renderText(buttonMargin+0.5f,buttonPos+0.5f,"New game",widthTiles,heightTiles);
+
+        //this.menuRenderer.renderMenuBackground(buttonPos,buttonMargin,widthTiles,heightTiles);
+        //this.fontRenderer.renderText(buttonMargin+0.5f,buttonPos+0.5f,"New game",widthTiles,heightTiles);
+
+
+        float tileSizeX = (float) 1 / (float)widthTiles;
+        float tileSizeY = (float) 1 / (float)heightTiles;
+
+
+        String new_game_cursor = "";
+        if (editing_game_name){
+            new_game_cursor = "_";
+        }
+        String[] options = {"new_game_title", "game_mode_select", "world_make"};
+        String[] option_text = {this.new_game_name+new_game_cursor,"Game Mode: ", "Create World"};
+        int[] options_offsets = {6, 0, 0};
+
+        buttonPos = heightTiles-5;
+        float mouseX = (float)Mouse.getX();
+        float mouseY = (float)Mouse.getY();
+        if (Mouse.isButtonDown(0)){if (!this.menu_button_pressed) {editing_game_name = false;}}
+        for (int i=0; i<options.length;i++){
+
+            float x1 = tileSizeX*(buttonMargin+1);
+            float y1 = tileSizeY*(buttonPos+2-(i*2));
+            float x2 = x1-tileSizeX;
+            float y2 = y1-(tileSizeY*2);
+
+            x1 = x1*width;
+            y1 = y1*height;
+            x2 = x2*width;
+            y2 = y2*height;
+
+            //System.out.println(y1 + "," + mouseY);
+
+
+            if (mouseY < y1 && mouseY > y2){
+                System.out.println(i);
+                this.menuRenderer.textureOffset = 3;
+                if (Mouse.isButtonDown(0)){
+                    if (!this.menu_button_pressed) {
+                        if (options[i] == "new_game_title"){
+                            editing_game_name = true;
+
+                        } else{
+                            editing_game_name = false;
+                        }
+                        if (options[i] == "world_make"){
+                            editing_game_name = false;
+                            this.level.load("levels//"+this.new_game_name+".dat");
+                            this.level.save();
+                            this.game_mode = 100;
+                            return;
+
+                        }
+                    }
+                    this.menu_button_pressed = true;
+                }else{
+                    this.menu_button_pressed = false;
+                }
+            }else {
+                this.menuRenderer.textureOffset = 0;
+            }
+
+            if (options[i] == "new_game_title"){
+                this.menuRenderer.textureOffset = 0;
+            }
+
+
+
+            this.menuRenderer.textureOffset += options_offsets[i];
+
+            this.menuRenderer.renderMenuBackground(buttonPos-(i*2),buttonMargin,widthTiles,heightTiles);
+            this.fontRenderer.renderText(buttonMargin+0.5f,buttonPos+0.5f-(i*2),option_text[i],widthTiles,heightTiles);
+            this.menuRenderer.textureOffset = 0;
+        }
+
+
+        if (editing_game_name){
+        char[] PressedKeys = textInput.getKeys();
+        for (int i=0; i< PressedKeys.length;i++){
+            System.out.println(PressedKeys[i]);
+            this.new_game_name = this.new_game_name + PressedKeys[i];
+        }
+        if (textInput.getBackspace()){
+            this.new_game_name = textInput.removeLastCharacter(this.new_game_name);
+        }}
+
+        //this.menu_levelRenderer.renderTex(this.hotbar[this.hotbar_slot]-1);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+        Display.update();
+    }
 
    public static void checkError() {
       int e = GL11.glGetError();
