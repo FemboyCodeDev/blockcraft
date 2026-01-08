@@ -17,7 +17,7 @@ public class Level {
    private byte[] blocks;
    private int[] lightDepths;
    private ArrayList<LevelListener> levelListeners = new ArrayList();
-   private String pathname;
+   public String pathname;
 
    public Level(int w, int h, int d) {
       this.width = w;
@@ -30,7 +30,11 @@ public class Level {
          for(int y = 0; y < d; ++y) {
             for(int z = 0; z < h; ++z) {
                int i = (y * this.height + z) * this.width + x;
+               int chunkX = x/16;
+               int chunkY = y/16;
+               int block = TerrainGen.blockAtPos(x,y,z);
                this.blocks[i] = (byte)(y <= d * 2 / 3 ? 1 : 0);
+               this.blocks[i] = (byte)block;
             }
          }
       }

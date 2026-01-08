@@ -919,7 +919,8 @@ public class RubyDung implements Runnable {
                         }
                         if (options[i] == "world_make"){
                             editing_game_name = false;
-                            this.level.load("levels//"+this.new_game_name+".dat");
+                            //this.level.load("levels//"+this.new_game_name+".dat");
+                            this.level.pathname = "levels//"+this.new_game_name+".dat";
                             this.level.save();
                             this.game_mode = 100;
                             return;
