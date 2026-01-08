@@ -10,6 +10,8 @@ public class TerrainGen {
             return 2;
         }else if (y < calculateSurfaceHeight(x,z)){
             return 1;
+        }else if (y < 128){
+            return 5;
         }
         return 0;
     }

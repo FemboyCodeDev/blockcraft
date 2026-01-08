@@ -102,7 +102,7 @@ public class RubyDung implements Runnable {
       this.game_mode = 100;
        this.game_mode = 0;
 
-      this.level = new Level(256, 256, 256);
+      this.level = new Level(512, 512, 256);
       //this.level.load("level.dat");
       //this.level.load("level.dat");
       this.menu_level = new Level(64, 64, 64);
@@ -223,6 +223,7 @@ public class RubyDung implements Runnable {
                Chunk.updates = 0;
                lastTime += 1000L;
                frames = 0;
+                //this.level.generate(this.player.x,this.player.y,this.player.z);
                //this.width = Display.getWidth(); #TODO: Make scaling work
                //this.height = Display.getHeight();
             }
@@ -921,6 +922,7 @@ public class RubyDung implements Runnable {
                             editing_game_name = false;
                             //this.level.load("levels//"+this.new_game_name+".dat");
                             this.level.pathname = "levels//"+this.new_game_name+".dat";
+                            this.level.generate(this.player.x,this.player.y,this.player.z);
                             this.level.save();
                             this.game_mode = 100;
                             return;

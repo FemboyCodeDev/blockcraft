@@ -30,21 +30,49 @@ public class Level {
 
       terrainGen = new TerrainGen();
 
+
       for(int x = 0; x < w; ++x) {
          for(int y = 0; y < d; ++y) {
             for(int z = 0; z < h; ++z) {
+
                int i = (y * this.height + z) * this.width + x;
-               int chunkX = x/16;
-               int chunkY = y/16;
-               int block = TerrainGen.blockAtPos(x,y,z);
-               this.blocks[i] = (byte)(y <= d * 2 / 3 ? 1 : 0);
-               this.blocks[i] = (byte)block;
+               if (y < 4){this.blocks[i] = (byte)1;} else{
+                  this.blocks[i] = (byte)-1;
+               }
+
             }
          }
       }
 
+
+
+
+   }
+   public void generate(int x1, int y1, int z1){
+      int w = this.width;
+      int h = this.height;
+      int d = this.depth;
+      for(int x = 0; x < w; ++x) {
+         for(int y = 0; y < d; ++y) {
+            for(int z = 0; z < h; ++z) {
+               if ((x1-x)+(z1-z) < 64 || true){
+
+               int i = (y * this.height + z) * this.width + x;
+               if (this.blocks[i] == -1) {
+                  int chunkX = x / 16;
+                  int chunkY = y / 16;
+                  int block = TerrainGen.blockAtPos(x, y, z);
+                  this.blocks[i] = (byte) (y <= d * 2 / 3 ? 1 : 0);
+                  this.blocks[i] = (byte) block;
+               }
+            }}
+         }
+      }
       this.calcLightDepths(0, 0, w, h);
    }
+
+
+   public void generate(float x, float y, float z){generate((int)x,(int)y,(int)z);}
 
    public void load(String pathname) {
       try {
@@ -122,12 +150,21 @@ public class Level {
       }
    }
 
-   public boolean isSolidTile(int x, int y, int z) {
-      return this.isTile(x, y, z);
+   public boolean isSolidTile(int x, int y, int z, int mode) {
+      if (this.isTile(x, y, z)) {
+         if (mode ==0){return true;}
+         if (this.getTile(x,y,z) != 5 & (mode == 1)){return true;}
+         if (this.getTile(x,y,z) == 5 & (mode == 2)){return true;}
+      }
+      return false;
    }
 
    public boolean isLightBlocker(int x, int y, int z) {
       return this.isSolidTile(x, y, z);
+   }
+
+   public boolean isSolidTile(int x, int y, int z) {
+      return isSolidTile(x,y,z,0);
    }
 
    public ArrayList<AABB> getCubes(AABB aABB) {
@@ -165,7 +202,7 @@ public class Level {
       for(int x = x0; x < x1; ++x) {
          for(int y = y0; y < y1; ++y) {
             for(int z = z0; z < z1; ++z) {
-               if (this.isSolidTile(x, y, z)) {
+               if (this.isSolidTile(x, y, z, 1)) {
                   aABBs.add(new AABB((float)x, (float)y, (float)z, (float)(x + 1), (float)(y + 1), (float)(z + 1)));
                }
             }

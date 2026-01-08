@@ -6,11 +6,17 @@ public class Tile {
    public static Tile rock = new Tile(1);
    public static Tile plank = new Tile(2);
    public static Tile dirt = new Tile(3);
+   public static Tile water = new Tile(4,0);
 
 
 
    private int tex = 0;
+   private int render_mode = 1;
 
+   private Tile(int tex, int mode) {
+      this.tex = tex;
+      this.render_mode = mode;
+   }
    private Tile(int tex) {
       this.tex = tex;
    }
@@ -59,7 +65,8 @@ public class Tile {
       float z0 = (float)z + 0.0F;
       float z1 = (float)z + 1.0F;
       float br;
-      if (!level.isSolidTile(x, y - 1, z)) {
+
+      if (!level.isSolidTile(x, y - 1, z,this.render_mode)) {
          br = level.getBrightness(x, y - 1, z) * c1;
          if (br == c1 ^ layer == 1) {
             t.color(br, br, br);
@@ -74,7 +81,7 @@ public class Tile {
          }
       }
 
-      if (!level.isSolidTile(x, y + 1, z)) {
+      if (!level.isSolidTile(x, y + 1, z,this.render_mode)) {
          br = level.getBrightness(x, y, z) * c1;
          if (br == c1 ^ layer == 1) {
             t.color(br, br, br);
@@ -89,7 +96,7 @@ public class Tile {
          }
       }
 
-      if (!level.isSolidTile(x, y, z - 1)) {
+      if (!level.isSolidTile(x, y, z - 1,this.render_mode)) {
          br = level.getBrightness(x, y, z - 1) * c2;
          if (br == c2 ^ layer == 1) {
             t.color(br, br, br);
@@ -104,7 +111,7 @@ public class Tile {
          }
       }
 
-      if (!level.isSolidTile(x, y, z + 1)) {
+      if (!level.isSolidTile(x, y, z + 1,this.render_mode)) {
          br = level.getBrightness(x, y, z + 1) * c2;
          if (br == c2 ^ layer == 1) {
             t.color(br, br, br);
@@ -119,7 +126,7 @@ public class Tile {
          }
       }
 
-      if (!level.isSolidTile(x - 1, y, z)) {
+      if (!level.isSolidTile(x - 1, y, z,this.render_mode)) {
          br = level.getBrightness(x - 1, y, z) * c3;
          if (br == c3 ^ layer == 1) {
             t.color(br, br, br);
@@ -134,7 +141,7 @@ public class Tile {
          }
       }
 
-      if (!level.isSolidTile(x + 1, y, z)) {
+      if (!level.isSolidTile(x + 1, y, z,this.render_mode)) {
          br = level.getBrightness(x + 1, y, z) * c3;
          if (br == c3 ^ layer == 1) {
             t.color(br, br, br);
@@ -148,7 +155,6 @@ public class Tile {
             t.vertex(x1, y1, z1);
          }
       }
-
    }
 
    public void renderFace(Tesselator t, int x, int y, int z, int face) {

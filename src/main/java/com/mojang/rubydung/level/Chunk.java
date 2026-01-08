@@ -20,7 +20,7 @@ public class Chunk {
    public static int rebuiltThisFrame = 0;
    public static int updates = 0;
 
-   public final Tile[] blocks = {Tile.air,Tile.grass,Tile.rock,Tile.plank,Tile.dirt};
+   public final Tile[] blocks = {Tile.air,Tile.grass,Tile.rock,Tile.plank,Tile.dirt, Tile.water};
 
    public Chunk(Level level, int x0, int y0, int z0, int x1, int y1, int z1) {
       this.level = level;
@@ -35,7 +35,7 @@ public class Chunk {
    }
 
    private void rebuild(int layer) {
-      if (rebuiltThisFrame != 2) {
+      if (rebuiltThisFrame != 3) {
          this.dirty = false;
          ++updates;
          ++rebuiltThisFrame;
@@ -49,7 +49,12 @@ public class Chunk {
             for(int y = this.y0; y < this.y1; ++y) {
                for(int z = this.z0; z < this.z1; ++z) {
                   if (this.level.isTile(x, y, z)) {
-                     blocks[this.level.getTile(x,y,z)].render(t, this.level, layer, x, y, z);
+                     if (this.level.getTile(x, y, z) != -1) {
+                        blocks[this.level.getTile(x, y, z)].render(t, this.level, layer, x, y, z);
+                     } else{
+                        blocks[4].render(t, this.level, layer, x, y, z);
+                     }
+
                      //int tex = y != this.level.depth * 2 / 3;
                      /*
                      int tex = 0;
@@ -75,6 +80,7 @@ public class Chunk {
       if (this.dirty) {
          this.rebuild(0);
          this.rebuild(1);
+         //this.rebuild(2);
       }
 
       GL11.glCallList(this.lists + layer);
