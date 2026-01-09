@@ -141,7 +141,7 @@ public class LevelRenderer implements LevelListener {
       this.t.flush();
       GL11.glDisable(3042);
    }
-
+   public void setDirty(float x0, float y0, float z0, float x1, float y1, float z1) { setDirty((int)x0,(int)y0,(int)z0,(int)x1,(int)y1,(int)z1);}
    public void setDirty(int x0, int y0, int z0, int x1, int y1, int z1) {
       x0 /= 16;
       x1 /= 16;

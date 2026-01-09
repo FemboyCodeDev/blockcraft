@@ -18,17 +18,52 @@ public class TerrainGen {
             return 5;
         }
         if (shouldPutTree(x, (int) calculateSurfaceHeight(x,z),z)){
-            if (y < calculateSurfaceHeight(x,z)+2) {
-                return 2;
+            if (y < calculateSurfaceHeight(x,z)+4) {
+                return 7;
             }
-            return 3;
+            //return 3;
+        }
+        if (y < calculateSurfaceHeight(x,z)+32) {
+            if (withinTree(x, y, z)) {
+                return 6;
+            }
         }
         return 0;
     }
-    public static boolean canHaveTree(int x, int y, int z){
+    public static boolean offsetInTree(int x, int y, int z){
+        //if (y < 5){return true;}
+        //if (y > 6){return true;}
+        if (x == 0){return true;}
+        if (z == 0){return true;}
+        if (y < 5){return true;}
+        return false;
+    }
+    public static boolean withinTree(int x, int y, int z){
+        for (int dx = -1; dx <= 1; dx ++){
+            for (int dz = -1; dz <= 1; dz ++) {
+                int height = (int) calculateSurfaceHeight(x+dx, z+dz);
+                if (offsetInTree(dx,y-height,dz)){
+                if (y <= height + 5 ) {
+                    if (y > height + 2) {
+                        //if (height >=128){
+                        if (shouldPutTree(x + dx, height, z + dz)) {
+                            return true;
+                        }
+                        //}
 
-        for (int dx = -8; dx < 8; dx ++){
-            for (int dz = -8; dz < 8; dz ++) {
+                    }
+                }
+                }
+            }
+
+        }
+        return false;
+    }
+    public static boolean canHaveTree(int x, int y, int z){
+        if (y < 128){return false;}
+
+        for (int dx = -4; dx < 4; dx ++){
+            for (int dz = -4; dz < 4; dz ++) {
                 if (Math.abs(calculateSurfaceHeight(dx + x, z+dz)-y) > 4) {
                     return false;
                 }
@@ -37,21 +72,42 @@ public class TerrainGen {
         }
         return true;
     }
-
     public static boolean shouldPutTree(int x, int y, int z){
-        if (!canHaveTree(x,y,z)){return false;}
-        if (perlin.getNoise(x * 10.1254, z * 10.1254) > 0.5){return true;}
+        return shouldPutTree(x,y,z,false);
+    }
+    public static boolean shouldPutTree(int x, int y, int z, boolean ignoreCan){
+        if (ignoreCan == false) {
+            if (!canHaveTree(x, y, z)) {
+                return false;
+            }
+        }
+
+        if (perlin.getNoise(x * 10.1254, z * 10.1254) > 0.5){
+            for (int dx = -2; dx < 2; dx ++) {
+                for (int dz = -2; dz < 2; dz++) {
+                    if (perlin.getNoise((x+dx) * 10.1254, (z+dz) * 10.1254) > 0.8){
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+
+
         /*
-        float value = perlin.getNoise(x * 1, y * 1);
-        for (int dx = -8; dx < 8; dx ++){
-            for (int dz = -8; dz < 8; dz ++) {
-                if (perlin.getNoise((x+dx) * 1, (z+dz) * 1) > value) {
+        float value = (float) perlin.getNoise(x * 10.1254, y * 10.1254);
+        for (int dx = -2; dx < 2; dx ++){
+            for (int dz = -2; dz < 2; dz ++) {
+                if (perlin.getNoise((x+dx) * 10.1254, (z+dz) * 10.1254) > value) {
                     return false;
                 }
             }
 
         }
-        */
+
+         */
+
         return false;
     }
     public static float calculateSurfaceHeight(int x, int z){

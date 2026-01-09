@@ -7,6 +7,8 @@ public class Tile {
    public static Tile plank = new Tile(2);
    public static Tile dirt = new Tile(3);
    public static Tile water = new Tile(4,0);
+   public static Tile log = new Tile(5);
+   public static Tile leaf = new Tile(6);
 
 
 
@@ -66,6 +68,8 @@ public class Tile {
       float z1 = (float)z + 1.0F;
       float br;
 
+      //c1 = 2.0f;
+      //layer = 0;
       if (!level.isSolidTile(x, y - 1, z,this.render_mode)) {
          br = level.getBrightness(x, y - 1, z) * c1;
          if (br == c1 ^ layer == 1) {

@@ -1,5 +1,6 @@
 package src.main.java.com.mojang.rubydung.level;
 
+import org.lwjgl.Sys;
 import src.main.java.com.mojang.rubydung.phys.AABB;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -94,8 +95,11 @@ public class Level {
 
    public void save() {
       try {
+         System.out.println("Saving");
+         this.calcLightDepths(0, 0, this.width, this.height);
          DataOutputStream dos = new DataOutputStream(new GZIPOutputStream(new FileOutputStream(new File(this.pathname))));
          dos.write(this.blocks);
+
          dos.close();
       } catch (Exception var2) {
          var2.printStackTrace();

@@ -102,8 +102,8 @@ public class RubyDung implements Runnable {
       this.game_mode = 100;
        this.game_mode = 0;
 
-      //this.level = new Level(512, 512, 256);
-       this.level = new Level(64, 64, 256);
+      this.level = new Level(256, 256, 256);
+       //this.level = new Level(64, 64, 256);
       //this.level.load("level.dat");
       //this.level.load("level.dat");
       this.menu_level = new Level(64, 64, 64);
@@ -224,10 +224,14 @@ public class RubyDung implements Runnable {
                Chunk.updates = 0;
                lastTime += 1000L;
                frames = 0;
+
                 //this.level.generate(this.player.x,this.player.y,this.player.z);
                //this.width = Display.getWidth(); #TODO: Make scaling work
                //this.height = Display.getHeight();
+                levelRenderer.allChanged();
             }
+
+             levelRenderer.setDirty(player.x - 4, player.y - 4, player.z - 4, player.x + 4, player.y + 4, player.z + 4);
          }
       } catch (Exception var10) {
          var10.printStackTrace();
@@ -257,7 +261,7 @@ public class RubyDung implements Runnable {
                System.out.println("Remove layer");
            }
            this.dev_command_pause = true;
-           for(int x = 0; x < 64; ++x) {for(int y = 0; y < 64; ++y) {level.setTile((int)x, (int) player.y-2, (int)y,0);}}
+           for(int x = 0; x < level.width; ++x) {for(int y = 0; y < level.height; ++y) {level.setTile((int)x, (int) player.y-2, (int)y,0);}}
 
        } // Key_END
        else {
@@ -793,6 +797,7 @@ public class RubyDung implements Runnable {
 
                           level.load("levels//" + levels[i]);
                           game_mode = 100;
+                          levelRenderer.allChanged();
                           Mouse.setGrabbed(true);
                           return;
                       }
