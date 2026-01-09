@@ -107,7 +107,7 @@ public class LevelRenderer implements LevelListener {
 
             for(int z = z0; z < z1; ++z) {
                GL11.glPushName(z);
-               if (this.level.isSolidTile(x, y, z)) {
+               if (this.level.isSolidTile(x, y, z, 1)) {
                   GL11.glPushName(0);
 
                   for(int i = 0; i < 6; ++i) {

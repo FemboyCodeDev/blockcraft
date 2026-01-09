@@ -20,6 +20,7 @@ public class Player {
    public float xRot;
    public AABB bb;
    public boolean onGround = false;
+   public boolean inWater = false;
 
    public Player(Level level) {
       this.level = level;
@@ -61,6 +62,14 @@ public class Player {
       this.zo = this.z;
       float xa = 0.0F;
       float ya = 0.0F;
+
+      this.inWater = false;
+
+      for (int dx = -1; dx < 1; dx ++) {
+
+         if (!this.inWater){this.inWater = level.getTile((int) this.x, (int) this.y+dx, (int) this.z) == 5;}
+      }
+
       if (Keyboard.isKeyDown(19)) {
          this.resetPos();
       }
@@ -84,6 +93,9 @@ public class Player {
       if ((Keyboard.isKeyDown(57) || Keyboard.isKeyDown(219)) && this.onGround) {
          this.yd = 0.12F;
       }
+      if ((Keyboard.isKeyDown(57) || Keyboard.isKeyDown(219)) && this.inWater) {
+         this.yd = 0.12F;
+      }
 
       this.moveRelative(xa, ya, this.onGround ? 0.02F : 0.005F);
       this.yd = (float)((double)this.yd - 0.005D);
@@ -96,9 +108,15 @@ public class Player {
          this.zd *= 0.8F;
       }
 
+      if (this.inWater){
+         this.yd *= 0.8F;
+      }
+
    }
 
    public void move(float xa, float ya, float za) {
+
+
       float xaOrg = xa;
       float yaOrg = ya;
       float zaOrg = za;
