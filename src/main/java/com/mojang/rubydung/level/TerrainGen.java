@@ -17,6 +17,12 @@ public class TerrainGen {
         }else if (y < 128){
             return 5;
         }
+        if (shouldPutTree(x, (int) calculateSurfaceHeight(x,z),z)){
+            if (y < calculateSurfaceHeight(x,z)+2) {
+                return 2;
+            }
+            return 3;
+        }
         return 0;
     }
     public static boolean canHaveTree(int x, int y, int z){

@@ -67,7 +67,7 @@ public class RubyDung implements Runnable {
     private boolean vsync = false;
 
     float fps;
-    final String version = "0.0.1c";
+    final String version = "0.0.1d";
 
    public void init() throws LWJGLException, IOException {
       int col = 920330;
@@ -102,7 +102,8 @@ public class RubyDung implements Runnable {
       this.game_mode = 100;
        this.game_mode = 0;
 
-      this.level = new Level(512, 512, 256);
+      //this.level = new Level(512, 512, 256);
+       this.level = new Level(64, 64, 256);
       //this.level.load("level.dat");
       //this.level.load("level.dat");
       this.menu_level = new Level(64, 64, 64);
