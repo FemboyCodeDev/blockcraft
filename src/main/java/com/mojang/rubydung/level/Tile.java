@@ -25,6 +25,24 @@ public class Tile {
       this.tex = tex;
    }
 
+    public int getWaterTile(int index) {
+        for (int i = 0; i < this.waterIndexes.length; ++i) {
+            if (this.waterIndexes[i] == index) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public float getFluidHeight(int x, int y, int z, Level level) {
+       int tile = getWaterTile(level.getTile(x, y, z));
+       if (tile == -1) {return 1;}
+        float height = (float) (tile+1) /(this.waterIndexes.length+1);
+       return 1-height;
+        //return height;
+    }
+
+
 
    public void render_flat(Tesselator t, Level level, int layer, int x, int y, int z) {
       float u0 = (float) this.tex / 16.0F;
@@ -90,8 +108,47 @@ public class Tile {
        float[] p15 = {x1, y0, z1}; //1;0;1
        float[] p16 = {x1, y1, z1}; //1;1;1
 
+       // Left Face (X-) points
+       float[] p17 = {x0, y1, z1}; // 0;1;1
+       float[] p18 = {x0, y1, z0}; // 0;1;0
+       float[] p19 = {x0, y0, z0}; // 0;0;0
+       float[] p20 = {x0, y0, z1}; // 0;0;1
+
+       // Right Face (X+) points
+       float[] p21 = {x1, y0, z1}; // 1;0;1
+       float[] p22 = {x1, y0, z0}; // 1;0;0
+       float[] p23 = {x1, y1, z0}; // 1;1;0
+       float[] p24 = {x1, y1, z1}; // 1;1;1
 
 
+// --- Top Vertex Height Recalculation ---
+
+       // Helper to get neighbor height or default to current height if not water
+       float h_curr = height;
+
+       float h_xN = getWaterTile(level.getTile(x - 1, y, z)) != -1 ? getFluidHeight(x - 1, y, z, level) : h_curr;
+       float h_xP = getWaterTile(level.getTile(x + 1, y, z)) != -1 ? getFluidHeight(x + 1, y, z, level) : h_curr;
+       float h_zN = getWaterTile(level.getTile(x, y, z - 1)) != -1 ? getFluidHeight(x, y, z - 1, level) : h_curr;
+       float h_zP = getWaterTile(level.getTile(x, y, z + 1)) != -1 ? getFluidHeight(x, y, z + 1, level) : h_curr;
+
+       // Diagonal helpers (treating as current height if not water)
+       float h_xNzN = getWaterTile(level.getTile(x - 1, y, z - 1)) != -1 ? getFluidHeight(x - 1, y, z - 1, level) : h_curr;
+       float h_xNzP = getWaterTile(level.getTile(x - 1, y, z + 1)) != -1 ? getFluidHeight(x - 1, y, z + 1, level) : h_curr;
+       float h_xPzN = getWaterTile(level.getTile(x + 1, y, z - 1)) != -1 ? getFluidHeight(x + 1, y, z - 1, level) : h_curr;
+       float h_xPzP = getWaterTile(level.getTile(x + 1, y, z + 1)) != -1 ? getFluidHeight(x + 1, y, z + 1, level) : h_curr;
+
+       // Corner Averages
+       float h00 = (h_curr + h_xN + h_zN + h_xNzN) / 4.0F; // X- Z-
+       float h01 = (h_curr + h_xN + h_zP + h_xNzP) / 4.0F; // X- Z+
+       float h10 = (h_curr + h_xP + h_zN + h_xPzN) / 4.0F; // X+ Z-
+       float h11 = (h_curr + h_xP + h_zP + h_xPzP) / 4.0F; // X+ Z+
+
+       // Apply to TOP vertices only
+       p5[1] = (float)y + h11; p6[1] = (float)y + h10; p7[1] = (float)y + h00; p8[1] = (float)y + h01;
+       p9[1] = (float)y + h00; p10[1] = (float)y + h10;
+       p13[1] = (float)y + h01; p16[1] = (float)y + h11;
+       p17[1] = (float)y + h01; p18[1] = (float)y + h00;
+       p23[1] = (float)y + h10; p24[1] = (float)y + h11;
 
        //c1 = 2.0f;
       //layer = 0;
@@ -159,35 +216,37 @@ public class Tile {
          }
       }
 
-      if (!level.isSolidTile(x - 1, y, z,this.render_mode)) {
-         br = level.getBrightness(x - 1, y, z) * c3;
-         if (br == c3 ^ layer == 1) {
-            t.color(br, br, br);
-            t.tex(u1, v0);
-            t.vertex(x0, y1, z1);
-            t.tex(u0, v0);
-            t.vertex(x0, y1, z0);
-            t.tex(u0, v1);
-            t.vertex(x0, y0, z0);
-            t.tex(u1, v1);
-            t.vertex(x0, y0, z1);
-         }
-      }
+// Left Face (X-)
+       if (!level.isSolidTile(x - 1, y, z, this.render_mode)) {
+           br = level.getBrightness(x - 1, y, z) * c3;
+           if (br == c3 ^ layer == 1) {
+               t.color(br, br, br);
+               t.tex(u1, v0);
+               t.vertex(p17[0], p17[1], p17[2]);
+               t.tex(u0, v0);
+               t.vertex(p18[0], p18[1], p18[2]);
+               t.tex(u0, v1);
+               t.vertex(p19[0], p19[1], p19[2]);
+               t.tex(u1, v1);
+               t.vertex(p20[0], p20[1], p20[2]);
+           }
+       }
 
-      if (!level.isSolidTile(x + 1, y, z,this.render_mode)) {
-         br = level.getBrightness(x + 1, y, z) * c3;
-         if (br == c3 ^ layer == 1) {
-            t.color(br, br, br);
-            t.tex(u0, v1);
-            t.vertex(x1, y0, z1);
-            t.tex(u1, v1);
-            t.vertex(x1, y0, z0);
-            t.tex(u1, v0);
-            t.vertex(x1, y1, z0);
-            t.tex(u0, v0);
-            t.vertex(x1, y1, z1);
-         }
-      }
+       // Right Face (X+)
+       if (!level.isSolidTile(x + 1, y, z, this.render_mode)) {
+           br = level.getBrightness(x + 1, y, z) * c3;
+           if (br == c3 ^ layer == 1) {
+               t.color(br, br, br);
+               t.tex(u0, v1);
+               t.vertex(p21[0], p21[1], p21[2]);
+               t.tex(u1, v1);
+               t.vertex(p22[0], p22[1], p22[2]);
+               t.tex(u1, v0);
+               t.vertex(p23[0], p23[1], p23[2]);
+               t.tex(u0, v0);
+               t.vertex(p24[0], p24[1], p24[2]);
+           }
+       }
    }
 
    public void renderFace(Tesselator t, int x, int y, int z, int face) {
