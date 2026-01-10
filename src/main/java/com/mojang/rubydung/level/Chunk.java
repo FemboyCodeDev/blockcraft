@@ -4,6 +4,8 @@ import src.main.java.com.mojang.rubydung.Textures;
 import src.main.java.com.mojang.rubydung.phys.AABB;
 import org.lwjgl.opengl.GL11;
 
+import java.util.Arrays;
+
 public class Chunk {
    public AABB aabb;
    public final Level level;
@@ -22,6 +24,8 @@ public class Chunk {
    public boolean updateBlocks = false;
 
    public final Tile[] blocks = {Tile.air,Tile.grass,Tile.rock,Tile.plank,Tile.dirt, Tile.water,Tile.log,Tile.leaf};
+   public final int[] waterIndexes = {5,51,52,53};
+
 
    public Chunk(Level level, int x0, int y0, int z0, int x1, int y1, int z1) {
       this.level = level;
@@ -55,7 +59,29 @@ public class Chunk {
                }
            }
        }
+       public void UpdateFluid(){
+           for (int i = 0; i < this.waterIndexes.length-1; ++i) {
+               UpdateFluid(this.waterIndexes[i],-this.waterIndexes[i+1]);
+           }
+           for (int i = 0; i < this.waterIndexes.length; ++i) {
+               ReplaceBlock(-this.waterIndexes[i],this.waterIndexes[i]);
+           }
+       }
+       public boolean isWaterTile(int index){
+       for (int i = 0; i < this.waterIndexes.length; ++i) {
+           if (this.waterIndexes[i] == index) { return true; }
+       }
 
+       return false;
+       }
+    public int getWaterTile(int index) {
+        for (int i = 0; i < this.waterIndexes.length; ++i) {
+            if (this.waterIndexes[i] == index) {
+                return i;
+            }
+        }
+        return 5;
+    }
     public void ReplaceBlock(int input,int output) {
         for (int x = this.x0; x < this.x1; ++x) {
             for (int y = this.y0; y < this.y1; ++y) {
@@ -85,47 +111,21 @@ public class Chunk {
             for(int y = this.y0; y < this.y1; ++y) {
                for(int z = this.z0; z < this.z1; ++z) {
                   if (this.level.isTile(x, y, z)) {
-                     if (this.level.getTile(x, y, z) != -1) {
-                        blocks[this.level.getTile(x, y, z)].render(t, this.level, layer, x, y, z);
+                     if (this.level.getTile(x, y, z) >= 0) {
 
+                         if (isWaterTile(this.level.getTile(x, y, z))) {
+                             float height = (float) (getWaterTile(this.level.getTile(x, y, z))+1) /(this.waterIndexes.length+1);
+                             blocks[5].render(t, this.level, layer, x, y, z, 1-height);
 
-                        if (this.level.getTile(x,y,z) == 5){ //
-                            //if(updateBlocks){
-
-                                /*
-                            if(this.level.getTile(x,y-1,z) == 0){
-                                this.level.setTile(x,y-1,z,5);
-                            }else {
-                                if (this.level.getTile(x, y, z - 1) == 0) {
-                                    this.level.setTile(x, y, z - 1 , 5);
-                                }
-                                if (this.level.getTile(x-1, y, z) == 0) {
-                                    this.level.setTile(x-1, y, z , 5);
-                                }
-                                if (this.level.getTile(x, y, z + 1) == 0) {
-                                    this.level.setTile(x, y, z + 1 , 5);
-                                }
-                                if (this.level.getTile(x + 1, y, z) == 0) {
-                                    this.level.setTile(x + 1, y, z , 5);
-                                }
-                            }
-                            */
-                            }
+                         }
+                         else{
+                             blocks[this.level.getTile(x, y, z)].render(t, this.level, layer, x, y, z);
+                         }
                         }
                      } else{
+                      if (this.level.getTile(x,y,z) == -5){blocks[4].render(t, this.level, layer, x, y, z);}
                         //blocks[4].render(t, this.level, layer, x, y, z);
                      }
-
-                     //int tex = y != this.level.depth * 2 / 3;
-                     /*
-                     int tex = 0;
-                     ++tiles;
-                     if (tex == 0) {
-                        Tile.rock.render(t, this.level, layer, x, y, z);
-                     } else {
-                        Tile.grass.render(t, this.level, layer, x, y, z);
-                     }
-                     */
                   }
                }
             }

@@ -231,7 +231,7 @@ public class RubyDung implements Runnable {
                 levelRenderer.allChanged();
 
                 if (game_mode == 100) {
-                    levelRenderer.doUpdate();
+                    levelRenderer.doUpdate(player);
 
                 }
             }
