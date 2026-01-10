@@ -58,7 +58,7 @@ public class RubyDung implements Runnable {
    //private static int texture = Textures.loadTexture("/terrain.png", 9728);
 
    private int hotbar_slot = 0;
-   private int[] hotbar = {1,2,3,4,0,0,0,0,0,0};
+   private int[] hotbar = {1,2,3,4,5,6,7,0,0,0};
 
 
    private int game_mode = 0; // 0: Main menu | 1: Save select | 2: Create Save | 10: Settings| 11: Graphics Settings| 100: In game | 101: Paused game
@@ -229,6 +229,11 @@ public class RubyDung implements Runnable {
                //this.width = Display.getWidth(); #TODO: Make scaling work
                //this.height = Display.getHeight();
                 levelRenderer.allChanged();
+
+                if (game_mode == 100) {
+                    levelRenderer.doUpdate();
+
+                }
             }
 
              levelRenderer.setDirty(player.x - 4, player.y - 4, player.z - 4, player.x + 4, player.y + 4, player.z + 4);

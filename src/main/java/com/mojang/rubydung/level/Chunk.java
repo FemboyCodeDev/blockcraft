@@ -19,6 +19,7 @@ public class Chunk {
    private static Tesselator t = new Tesselator();
    public static int rebuiltThisFrame = 0;
    public static int updates = 0;
+   public boolean updateBlocks = false;
 
    public final Tile[] blocks = {Tile.air,Tile.grass,Tile.rock,Tile.plank,Tile.dirt, Tile.water,Tile.log,Tile.leaf};
 
@@ -33,6 +34,41 @@ public class Chunk {
       this.aabb = new AABB((float)x0, (float)y0, (float)z0, (float)x1, (float)y1, (float)z1);
       this.lists = GL11.glGenLists(2);
    }
+
+   public void UpdateFluid(int input,int output) {
+       for (int x = this.x0; x < this.x1; ++x) {
+           for (int y = this.y0; y < this.y1; ++y) {
+               for (int z = this.z0; z < this.z1; ++z) {
+                   if (this.level.isTile(x, y, z)) {
+                       if (this.level.getTile(x, y, z) == input) { //
+                           //wdif (updateBlocks) {
+                               if (this.level.getTile(x, y - 1, z) == 0) {this.level.setTile(x, y - 1, z, output);}
+                               if (this.level.getTile(x, y, z - 1) == 0) {this.level.setTile(x, y, z - 1, output);}
+                               if (this.level.getTile(x - 1, y, z) == 0) {this.level.setTile(x - 1, y, z, output);}
+                               if (this.level.getTile(x, y, z + 1) == 0) {this.level.setTile(x, y, z + 1, output);}
+                               if (this.level.getTile(x + 1, y, z) == 0) {this.level.setTile(x + 1, y, z, output);}
+
+                               //}
+                           }
+                       }
+                   }
+               }
+           }
+       }
+
+    public void ReplaceBlock(int input,int output) {
+        for (int x = this.x0; x < this.x1; ++x) {
+            for (int y = this.y0; y < this.y1; ++y) {
+                for (int z = this.z0; z < this.z1; ++z) {
+                    if (this.level.isTile(x, y, z)) {
+                        if (this.level.getTile(x, y, z) == input) {this.level.setTile(x, y, z, output);}
+                    }
+                }
+            }
+        }
+    }
+
+
 
    private void rebuild(int layer) {
       if (rebuiltThisFrame != 3) {
@@ -51,8 +87,33 @@ public class Chunk {
                   if (this.level.isTile(x, y, z)) {
                      if (this.level.getTile(x, y, z) != -1) {
                         blocks[this.level.getTile(x, y, z)].render(t, this.level, layer, x, y, z);
+
+
+                        if (this.level.getTile(x,y,z) == 5){ //
+                            //if(updateBlocks){
+
+                                /*
+                            if(this.level.getTile(x,y-1,z) == 0){
+                                this.level.setTile(x,y-1,z,5);
+                            }else {
+                                if (this.level.getTile(x, y, z - 1) == 0) {
+                                    this.level.setTile(x, y, z - 1 , 5);
+                                }
+                                if (this.level.getTile(x-1, y, z) == 0) {
+                                    this.level.setTile(x-1, y, z , 5);
+                                }
+                                if (this.level.getTile(x, y, z + 1) == 0) {
+                                    this.level.setTile(x, y, z + 1 , 5);
+                                }
+                                if (this.level.getTile(x + 1, y, z) == 0) {
+                                    this.level.setTile(x + 1, y, z , 5);
+                                }
+                            }
+                            */
+                            }
+                        }
                      } else{
-                        blocks[4].render(t, this.level, layer, x, y, z);
+                        //blocks[4].render(t, this.level, layer, x, y, z);
                      }
 
                      //int tex = y != this.level.depth * 2 / 3;
@@ -73,8 +134,9 @@ public class Chunk {
          t.flush();
          GL11.glDisable(3553);
          GL11.glEndList();
+          updateBlocks = false;
       }
-   }
+
 
    public void render(int layer) {
       if (this.dirty) {

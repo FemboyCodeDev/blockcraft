@@ -5,30 +5,36 @@ import com.mojang.rubydung.level.PerlinNoise;
 public class TerrainGen {
     public static float frequency = 0.05f;
     public static PerlinNoise perlin = new PerlinNoise(100);
-    public static int blockAtPos(int x, int y, int z){
-        if (y < calculateSurfaceHeight(x,z)-1){
+    public static int blockAtPos(int x, int y, int z){return blockAtPos(x, y, z, 1);}
+    public static int blockAtPos(int x, int y, int z,int mode){
 
-            return 1;
-        }else if (y < calculateSurfaceHeight(x,z)){
-            if (shouldPutTree(x,y,z)){
-                return 4;
+        if (mode == 1) {if (y < calculateSurfaceHeight(x, z) - 1) {return 1;} return 0;}
+        if (mode == 0) {
+            if (y < calculateSurfaceHeight(x, z) - 1) {
+
+                return 1;
+            } else if (y < calculateSurfaceHeight(x, z)) {
+                if (shouldPutTree(x, y, z)) {
+                    return 4;
+                }
+                return 1;
+            } else if (y < 128) {
+                return 5;
             }
-            return 1;
-        }else if (y < 128){
-            return 5;
-        }
-        if (shouldPutTree(x, (int) calculateSurfaceHeight(x,z),z)){
-            if (y < calculateSurfaceHeight(x,z)+4) {
-                return 7;
+            if (shouldPutTree(x, (int) calculateSurfaceHeight(x, z), z)) {
+                if (y < calculateSurfaceHeight(x, z) + 4) {
+                    return 7;
+                }
+                //return 3;
             }
-            //return 3;
-        }
-        if (y < calculateSurfaceHeight(x,z)+32) {
-            if (withinTree(x, y, z)) {
-                return 6;
+            if (y < calculateSurfaceHeight(x, z) + 32) {
+                if (withinTree(x, y, z)) {
+                    return 6;
+                }
             }
+            return 0;
         }
-        return 0;
+        return 1;
     }
     public static boolean offsetInTree(int x, int y, int z){
         //if (y < 5){return true;}

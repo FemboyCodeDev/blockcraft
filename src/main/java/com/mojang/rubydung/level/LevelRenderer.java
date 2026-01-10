@@ -88,6 +88,16 @@ public class LevelRenderer implements LevelListener {
 
    }
 
+    public void doUpdate() {
+
+        for(int i = 0; i < this.chunks.length; ++i) {
+            this.chunks[i].UpdateFluid(5,-5);
+            this.chunks[i].ReplaceBlock(-5,5);
+            //this.chunks[i].updateBlocks = true;
+        }
+
+    }
+
    public void pick(Player player) {
       float r = 3.0F;
       AABB box = player.bb.grow(r, r, r);
