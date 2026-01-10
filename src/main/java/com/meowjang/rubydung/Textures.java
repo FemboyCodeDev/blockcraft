@@ -1,4 +1,4 @@
-package src.main.java.com.mojang.rubydung;
+package com.meowjang.rubydung;
 
 import java.awt.image.BufferedImage;
 import java.io.File;

@@ -1,4 +1,4 @@
-package src.main.java.com.mojang.rubydung.level;
+package com.meowjang.rubydung.level;
 
 public interface LevelListener {
    void tileChanged(int var1, int var2, int var3);

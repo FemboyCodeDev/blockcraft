@@ -1,7 +1,7 @@
-package src.main.java.com.mojang.rubydung;
+package com.meowjang.rubydung;
 
-import src.main.java.com.mojang.rubydung.level.Level;
-import src.main.java.com.mojang.rubydung.phys.AABB;
+import com.meowjang.rubydung.level.Level;
+import com.meowjang.rubydung.phys.AABB;
 import java.util.List;
 import org.lwjgl.input.Keyboard;
 

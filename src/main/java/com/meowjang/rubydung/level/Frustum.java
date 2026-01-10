@@ -1,6 +1,6 @@
-package src.main.java.com.mojang.rubydung.level;
+package com.meowjang.rubydung.level;
 
-import src.main.java.com.mojang.rubydung.phys.AABB;
+import com.meowjang.rubydung.phys.AABB;
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;

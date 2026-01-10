@@ -1,6 +1,4 @@
-package src.main.java.com.mojang.rubydung.level;
-
-import com.mojang.rubydung.level.PerlinNoise;
+package com.meowjang.rubydung.level;
 
 public class TerrainGen {
     public static float frequency = 0.05f;

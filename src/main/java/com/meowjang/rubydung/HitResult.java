@@ -1,4 +1,4 @@
-package src.main.java.com.mojang.rubydung;
+package com.meowjang.rubydung;
 
 public class HitResult {
    public int x;

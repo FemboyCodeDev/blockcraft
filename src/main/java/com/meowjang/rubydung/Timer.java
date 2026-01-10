@@ -1,4 +1,4 @@
-package src.main.java.com.mojang.rubydung;
+package com.meowjang.rubydung;
 
 public class Timer {
    private static final long NS_PER_SECOND = 1000000000L;

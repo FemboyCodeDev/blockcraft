@@ -1,4 +1,4 @@
-package src.main.java.com.mojang.rubydung.level;
+package com.meowjang.rubydung.level;
 
 public class Tile {
    public static Tile air = new Tile(-1);

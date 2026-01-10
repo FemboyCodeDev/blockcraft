@@ -1,11 +1,9 @@
-package src.main.java.com.mojang.rubydung;
+package com.meowjang.rubydung;
 
-import com.mojang.rubydung.TextInput;
-import src.main.java.com.mojang.rubydung.level.Chunk;
-import src.main.java.com.mojang.rubydung.level.Level;
-import src.main.java.com.mojang.rubydung.level.LevelRenderer;
-import com.mojang.rubydung.*;
-import src.main.*;
+import com.meowjang.rubydung.level.Chunk;
+import com.meowjang.rubydung.level.Level;
+import com.meowjang.rubydung.level.LevelRenderer;
+//import com.mojang.rubydung.*;
 
 import java.awt.Component;
 import java.io.File;

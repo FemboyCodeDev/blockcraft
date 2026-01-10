@@ -1,4 +1,4 @@
-package com.mojang.rubydung.level;
+package com.meowjang.rubydung.level;
 
 import java.util.Random;
 

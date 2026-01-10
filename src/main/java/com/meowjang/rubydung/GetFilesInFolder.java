@@ -1,4 +1,4 @@
-package com.mojang.rubydung;
+package com.meowjang.rubydung;
 
 import java.io.File;
 import java.util.ArrayList;

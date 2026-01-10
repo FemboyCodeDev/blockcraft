@@ -1,4 +1,4 @@
-package src.main.java.com.mojang.rubydung.level;
+package com.meowjang.rubydung.level;
 
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;

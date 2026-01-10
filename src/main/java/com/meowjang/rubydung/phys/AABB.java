@@ -1,4 +1,4 @@
-package src.main.java.com.mojang.rubydung.phys;
+package com.meowjang.rubydung.phys;
 
 public class AABB {
    private float epsilon = 0.0F;

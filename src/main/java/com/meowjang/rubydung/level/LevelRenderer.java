@@ -1,9 +1,9 @@
-package src.main.java.com.mojang.rubydung.level;
+package com.meowjang.rubydung.level;
 
-import src.main.java.com.mojang.rubydung.HitResult;
-import src.main.java.com.mojang.rubydung.Player;
-import src.main.java.com.mojang.rubydung.Textures;
-import src.main.java.com.mojang.rubydung.phys.AABB;
+import com.meowjang.rubydung.HitResult;
+import com.meowjang.rubydung.Player;
+import com.meowjang.rubydung.Textures;
+import com.meowjang.rubydung.phys.AABB;
 import org.lwjgl.opengl.GL11;
 
 public class LevelRenderer implements LevelListener {

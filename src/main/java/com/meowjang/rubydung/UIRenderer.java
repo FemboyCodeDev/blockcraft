@@ -1,6 +1,6 @@
-package src.main.java.com.mojang.rubydung;
+package com.meowjang.rubydung;
 
-import src.main.java.com.mojang.rubydung.level.Tesselator;
+import com.meowjang.rubydung.level.Tesselator;
 import org.lwjgl.opengl.GL11;
 
 public class UIRenderer {
